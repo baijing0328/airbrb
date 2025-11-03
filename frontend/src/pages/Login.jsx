@@ -1,6 +1,6 @@
 import { Layout, Button, Form, Input, Card, Typography } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { useEffect } from "react";
+import "./Login.scss";
 
 const onFinish = (values) => {
   console.log("Success:", values);
@@ -14,43 +14,12 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 const Login = () => {
-  useEffect(() => {
-    // Remove default margins and padding from body and html
-    document.body.style.margin = "0";
-    document.body.style.padding = "0";
-    document.documentElement.style.margin = "0";
-    document.documentElement.style.padding = "0";
-
-    return () => {
-      // Cleanup on unmount
-      document.body.style.margin = "";
-      document.body.style.padding = "";
-      document.documentElement.style.margin = "";
-      document.documentElement.style.padding = "";
-    };
-  }, []);
-
   return (
-    <Layout style={{ minHeight: "100vh", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
-      <Content
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "20px",
-          minHeight: "100vh",
-        }}
-      >
-        <Card
-          style={{
-            width: "100%",
-            maxWidth: 450,
-            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
-            borderRadius: "12px",
-          }}
-        >
-          <div style={{ textAlign: "center", marginBottom: 30 }}>
-            <Title level={2} style={{ marginBottom: 8 }}>
+    <Layout className="login-layout">
+      <Content className="login-content">
+        <Card className="login-card">
+          <div className="login-header">
+            <Title level={2} className="login-header__title">
               Welcome Back
             </Title>
             <Typography.Text type="secondary">
@@ -89,27 +58,22 @@ const Login = () => {
               />
             </Form.Item>
 
-            <Form.Item style={{ marginBottom: 12 }}>
+            <Form.Item className="login-form__submit-item">
               <Button
                 type="primary"
                 htmlType="submit"
                 block
-                style={{ height: 45, fontSize: 16 }}
+                className="login-form__submit-button"
               >
                 Sign In
               </Button>
             </Form.Item>
 
-            <div
-              style={{
-                textAlign: "center",
-                marginTop: 16,
-              }}
-            >
+            <div className="login-footer">
               <Typography.Text type="secondary">
                 Don&apos;t have an account?{" "}
               </Typography.Text>
-              <Button type="link" style={{ padding: 0 }}>
+              <Button type="link" className="login-footer__signup-link">
                 Sign Up
               </Button>
             </div>
