@@ -1,6 +1,7 @@
 import { Layout, Button, Form, Input, Card, Typography } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import LogoutBtn from "../components/LogoutBtn";
 import "./Register.scss";
 
 const onFinish = (values) => {
@@ -33,7 +34,7 @@ const Register = () => {
               Join AirBrB today
             </Typography.Text>
           </div>
-
+          <LogoutBtn />
           <Form
             name="register"
             onFinish={onFinish}
