@@ -5,9 +5,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      <nav>
-        <Link to="/login">Login</Link>
-      </nav>
       <Routes>
         <Route path="/login" element={<Login />} />
       </Routes>
