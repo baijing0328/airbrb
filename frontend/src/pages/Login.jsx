@@ -41,7 +41,10 @@ const Login = () => {
               name="email"
               rules={[
                 { required: true, message: "Please input your email!" },
-                { type: "email", message: "Please enter a valid email address!" },
+                {
+                  type: "email",
+                  message: "Please enter a valid email address!",
+                },
               ]}
             >
               <Input prefix={<UserOutlined />} placeholder="your@email.com" />
@@ -50,7 +53,9 @@ const Login = () => {
             <Form.Item
               label="Password"
               name="password"
-              rules={[{ required: true, message: "Please input your password!" }]}
+              rules={[
+                { required: true, message: "Please input your password!" },
+              ]}
             >
               <Input.Password
                 prefix={<LockOutlined />}
