@@ -1,5 +1,6 @@
 import { Layout, Button, Form, Input, Card, Typography } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import "./Login.scss";
 
 const onFinish = (values) => {
@@ -14,6 +15,12 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  const handleSignUp = () => {
+    navigate("/register");
+  };
+
   return (
     <Layout className="login-layout">
       <Content className="login-content">
@@ -78,7 +85,11 @@ const Login = () => {
               <Typography.Text type="secondary">
                 Don&apos;t have an account?{" "}
               </Typography.Text>
-              <Button type="link" className="login-footer__signup-link">
+              <Button
+                type="link"
+                className="login-footer__signup-link"
+                onClick={handleSignUp}
+              >
                 Sign Up
               </Button>
             </div>

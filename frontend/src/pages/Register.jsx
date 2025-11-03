@@ -1,5 +1,6 @@
 import { Layout, Button, Form, Input, Card, Typography } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import "./Register.scss";
 
 const onFinish = (values) => {
@@ -14,6 +15,12 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 const Register = () => {
+  const navigate = useNavigate();
+
+  const handleSignIn = () => {
+    navigate("/login");
+  };
+
   return (
     <Layout className="register-layout">
       <Content className="register-content">
@@ -113,7 +120,11 @@ const Register = () => {
               <Typography.Text type="secondary">
                 Already have an account?{" "}
               </Typography.Text>
-              <Button type="link" className="register-footer__signin-link">
+              <Button
+                type="link"
+                className="register-footer__signin-link"
+                onClick={handleSignIn}
+              >
                 Sign In
               </Button>
             </div>
