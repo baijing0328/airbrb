@@ -1,11 +1,10 @@
-import { Layout, Button, Form, Input, Card, Typography } from "antd";
+import { Layout, Button, Form, Input, Card, Typography, message } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../store/hooks";
+import { setCredentials } from "../store/slices/authSlice";
+import { registerAPI } from "../services/authService";
 import "./Register.scss";
-
-const onFinish = (values) => {
-  console.log("Success:", values);
-};
 
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
@@ -16,9 +15,31 @@ const { Title } = Typography;
 
 const Register = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleSignIn = () => {
     navigate("/login");
+  };
+
+  const onFinish = async (values) => {
+    const { name, email, password } = values;
+    try {
+      const response = await registerAPI(email, password, name);
+      console.log("Success:", response);
+
+      dispatch(
+        setCredentials({
+          token: response.token,
+          user: response.user || { email: values.email },
+        })
+      );
+
+      message.success("Registration successful!");
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
   };
 
   return (
