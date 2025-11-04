@@ -1,0 +1,45 @@
+// Host page layout
+.host-layout {
+  min-height: 100vh;
+  background: #fff;
+}
+
+// Header
+.host-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 48px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  height: 80px;
+
+  &__left {
+    display: flex;
+    align-items: center;
+  }
+
+  &__title {
+    margin: 0;
+    color: #262626;
+    font-weight: 500;
+    font-size: 20px;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+}
+
+// Content
+.host-content {
+  padding: 48px;
+  min-height: calc(100vh - 80px);
+
+  &__wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
