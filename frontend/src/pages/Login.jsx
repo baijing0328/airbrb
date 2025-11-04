@@ -27,7 +27,7 @@ const Login = () => {
 
       message.success("Login successful!");
 
-      navigate("/dashboard");
+      navigate("/host");
     } catch (error) {
       console.error("Login failed:", error);
     }
