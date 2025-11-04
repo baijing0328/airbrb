@@ -1,9 +1,9 @@
 import { Layout, Button, Form, Input, Card, Typography, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "@/store/hooks";
-import { setCredentials } from "@/store/slices/authSlice";
-import { loginAPI } from "@/services/authService";
+import { useAppDispatch } from "../store/hooks";
+import { setCredentials } from "../store/slices/authSlice";
+import { loginAPI } from "../services/authService";
 import "./Login.scss";
 
 const { Content } = Layout;
@@ -17,20 +17,19 @@ const Login = () => {
     try {
       const response = await loginAPI(values.email, values.password);
       console.log("Login successful:", response);
-      
-      // Save token and user info to Redux store
-      dispatch(setCredentials({ 
-        token: response.token, 
-        user: response.user || { email: values.email } 
-      }));
-      
+
+      dispatch(
+        setCredentials({
+          token: response.token,
+          user: response.user || { email: values.email },
+        })
+      );
+
       message.success("Login successful!");
-      
-      // Navigate to home or dashboard
+
       navigate("/dashboard");
     } catch (error) {
       console.error("Login failed:", error);
-      // Error message is already shown by request interceptor
     }
   };
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { message } from 'antd';
+import { message } from "antd";
 
 // Create axios instance with default config
 const request = axios.create({
@@ -34,37 +34,17 @@ request.interceptors.response.use(
   (error) => {
     // Handle error response
     if (error.response) {
-      const { status, data } = error.response;
+      const { data } = error.response;
       const errorMessage = data.error || "An error occurred";
-
-      switch (status) {
-      case 401:
-        // Unauthorized - clear token and redirect to login
-        message.error("Unauthorized. Please login again.");
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-        break;
-      case 403:
-        message.error(errorMessage || "Access denied");
-        break;
-      case 404:
-        message.error(errorMessage || "Resource not found");
-        break;
-      case 500:
-        message.error(errorMessage || "Internal server error");
-        break;
-      default:
-        message.error(errorMessage);
-      }
-
+      message.error(errorMessage, 3);
       return Promise.reject(data);
     } else if (error.request) {
       // Request was made but no response received
-      message.error("Network error. Please check your connection.");
+      message.error("Network error. Please check your connection.", 3);
       return Promise.reject({ error: "Network error" });
     } else {
       // Something else happened
-      message.error(error.message || "An unexpected error occurred");
+      message.error(error.message || "An unexpected error occurred", 3);
       return Promise.reject({ error: error.message });
     }
   }
