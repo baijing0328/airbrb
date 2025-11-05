@@ -1,4 +1,5 @@
-import { Card, Tag, Flex } from "antd";
+import { Card, Tag, Flex, Rate, Typography } from "antd";
+import { DollarOutlined, StarOutlined, HomeOutlined, BankOutlined } from "@ant-design/icons";
 const { Meta } = Card;
 
 const renderPropertyType = (metadata) => {
@@ -18,21 +19,98 @@ const renderPropertyType = (metadata) => {
 const HostItem = ({ listing }) => {
   const { title, price, thumbnail, reviews, metadata } = listing;
   console.log(metadata);
+  
+  const theme = {
+    tiffanyBlue: '#81D8D0',
+    marsGreen: '#2D5F5D',
+    lightTiffany: '#B3E5E0',
+    darkMars: '#1A3635',
+    sunblownYellow: '#FFBE7B'
+  };
+  
   return (
     <Card
       hoverable
-      style={{ width: 240 }}
+      style={{ 
+        width: 320, 
+        borderRadius: '12px',
+        overflow: 'hidden',
+        boxShadow: `0 2px 8px ${theme.tiffanyBlue}40`,
+        transition: 'all 0.3s ease',
+        border: `1px solid ${theme.lightTiffany}`
+      }}
+      styles={{
+        body: { padding: '16px' },
+        cover: { overflow: 'hidden', height: '200px' }
+      }}
       cover={
-        <img
-          alt={title}
-          src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
-        />
+        <div style={{ 
+          height: '200px', 
+          overflow: 'hidden',
+          position: 'relative'
+        }}>
+          <img
+            alt={title}
+            src={thumbnail}
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover',
+              transition: 'transform 0.3s ease'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          />
+          <div style={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px'
+          }}>
+            {renderPropertyType(metadata)}
+          </div>
+        </div>
       }
     >
-      <Meta title={title} description={renderPropertyType(metadata)} />
-      <Flex vertical>
-        <div>Price: ${price}</div>
-        <div>Reviews: {reviews?.length || 0}</div>
+      <Meta 
+        title={
+          <Typography.Title level={5} style={{ margin: 0, fontSize: '16px', color: theme.darkMars }}>
+            {title}
+          </Typography.Title>
+        } 
+        description={
+          <Flex align="center" gap="small" style={{ marginTop: '8px' }}>
+            <HomeOutlined style={{ color: theme.marsGreen }} />
+            <Typography.Text type="secondary" style={{ fontSize: '14px', color: theme.marsGreen }}>
+              {metadata?.bedrooms || 0} Beds · {metadata?.bathrooms || 0} Baths
+            </Typography.Text>
+          </Flex>
+        }
+      />
+      
+      <Flex vertical gap="middle" style={{ marginTop: '16px' }}>
+        <Flex justify="space-between" align="center">
+          <Flex align="baseline" gap="4px">
+            <DollarOutlined style={{ color: theme.tiffanyBlue, fontSize: '18px' }} />
+            <Typography.Text strong style={{ fontSize: '20px', color: theme.marsGreen }}>
+              {price}
+            </Typography.Text>
+            <Typography.Text type="secondary" style={{ fontSize: '14px', color: theme.marsGreen }}>
+              / night
+            </Typography.Text>
+          </Flex>
+        </Flex>
+        
+        <Flex justify="space-between" align="center">
+          <Rate 
+            disabled 
+            defaultValue={4} 
+            style={{ fontSize: '16px', color: theme.sunblownYellow }}
+          />
+          <Typography.Text type="secondary" style={{ fontSize: '14px', color: theme.marsGreen }}>
+            <StarOutlined style={{ color: theme.sunblownYellow, marginRight: '4px' }} />
+            {reviews?.length || 0} reviews
+          </Typography.Text>
+        </Flex>
       </Flex>
     </Card>
   );
