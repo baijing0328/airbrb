@@ -24,7 +24,6 @@ const renderPropertyType = (metadata) => {
 
 const HostItem = ({ listing }) => {
   const { title, price, thumbnail, reviews, metadata } = listing;
-  console.log(metadata);
 
   const theme = {
     tiffanyBlue: "#81D8D0",
