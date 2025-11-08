@@ -10,6 +10,7 @@ import {
   Space,
   Popover,
   List,
+  message,
 } from "antd";
 import {
   PlusOutlined,
@@ -17,7 +18,8 @@ import {
   MinusCircleOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
-import { fileToDataUrl } from "../../utils/helper";
+import { fileToDataUrl, formatFormData } from "../../utils/helper";
+import { addListing } from "../../services/listingManageService";
 
 const formRules = {
   title: [
@@ -52,14 +54,6 @@ const formRules = {
   ],
 };
 
-const normFile = (e) => {
-  console.log("Upload event:", e);
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e?.fileList;
-};
-
 const promptData = [
   "Single beds: Single, Long Single, and King Single beds.",
   "Double beds: Double, Queen, King, Super King beds.",
@@ -68,11 +62,19 @@ const promptData = [
 const CreateHostForm = () => {
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
-  const [formValues, setFormValues] = useState();
-  const onCreate = (values) => {
-    setFormValues(values);
-    console.log("Form Values:", formValues, values);
-    setOpen(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const onCreate = async (values) => {
+    const params = await formatFormData(values);
+    console.log(params);
+    addListing(params)
+      .then((response) => {
+        message.success("Listing created successfully");
+        console.log(response);
+        setOpen(false);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
   return (
     <>
@@ -301,25 +303,38 @@ const CreateHostForm = () => {
               fileToDataUrl(file)
                 .then((dataUrl) => {
                   form.setFieldsValue({ thumbnail: dataUrl });
+                  setImagePreview(dataUrl);
                 })
                 .catch((error) => {
                   console.error(error);
+                  setImagePreview(null);
                 });
               return false;
             }}
             onRemove={() => {
               form.setFieldsValue({ thumbnail: null });
+              setImagePreview(null);
             }}
           >
-            <p className="ant-upload-drag-icon">
-              <InboxOutlined />
-            </p>
-            <p className="ant-upload-text">
-              Click or drag file to this area to upload
-            </p>
-            <p className="ant-upload-hint">
-              Support for a single or bulk upload.
-            </p>
+            {imagePreview ? (
+              <img
+                src={imagePreview}
+                alt="preview"
+                style={{ maxHeight: "150px" }}
+              />
+            ) : (
+              <>
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">
+                  Click or drag file to this area to upload
+                </p>
+                <p className="ant-upload-hint">
+                  Support for a single or bulk upload.
+                </p>
+              </>
+            )}
           </Upload.Dragger>
         </Form.Item>
         <Form.Item name="thumbnail" hidden>

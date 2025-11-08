@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 
 /**
- * Auth API Service
+ * User Auth API Service
  */
 
 // User login
