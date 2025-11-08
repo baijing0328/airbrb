@@ -17,6 +17,7 @@ import {
   MinusCircleOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
+import { fileToDataUrl } from "../../utils/helper";
 
 const formRules = {
   title: [
@@ -69,8 +70,8 @@ const CreateHostForm = () => {
   const [form] = Form.useForm();
   const [formValues, setFormValues] = useState();
   const onCreate = (values) => {
-    console.log("Received values of form: ", values);
     setFormValues(values);
+    console.log("Form Values:", formValues, values);
     setOpen(false);
   };
   return (
@@ -193,6 +194,7 @@ const CreateHostForm = () => {
                     <Form.Item
                       {...restField}
                       name={[name, "single"]}
+                      label={"Single Beds"}
                       initialValue={0}
                       rules={[
                         {
@@ -202,14 +204,16 @@ const CreateHostForm = () => {
                               name,
                               "double",
                             ]);
-                            console.log(11111, form.getFieldValue());
-                            // 使用 ?? 0 来处理 undefined 情况
                             const single = value ?? 0;
                             const double = doubleValue ?? 0;
 
-                            console.log("Bedroom index:", name);
-                            console.log("Single beds:", single);
-                            console.log("Double beds:", double);
+                            if (single === 0 && double === 0) {
+                              return Promise.reject(
+                                new Error(
+                                  "At least one bed (single or double) is required"
+                                )
+                              );
+                            }
                             return Promise.resolve();
                           },
                         },
@@ -226,9 +230,25 @@ const CreateHostForm = () => {
                       {...restField}
                       name={[name, "double"]}
                       initialValue={0}
+                      label={"Double Beds"}
                       rules={[
                         {
                           validator: async (_, value) => {
+                            const single =
+                              form.getFieldValue([
+                                "bedrooms",
+                                name,
+                                "single",
+                              ]) ?? 0;
+                            const double = value ?? 0;
+
+                            if (single === 0 && double === 0) {
+                              return Promise.reject(
+                                new Error(
+                                  "At least one bed (single or double) is required"
+                                )
+                              );
+                            }
                             return Promise.resolve();
                           },
                         },
@@ -274,24 +294,36 @@ const CreateHostForm = () => {
           <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item label="Thumbnail">
-          <Form.Item
-            name="thumbnail "
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
-            noStyle
+          <Upload.Dragger
+            name="files"
+            maxCount={1}
+            beforeUpload={(file) => {
+              fileToDataUrl(file)
+                .then((dataUrl) => {
+                  form.setFieldsValue({ thumbnail: dataUrl });
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+              return false;
+            }}
+            onRemove={() => {
+              form.setFieldsValue({ thumbnail: null });
+            }}
           >
-            <Upload.Dragger name="files" action="/upload.do">
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-              </p>
-              <p className="ant-upload-text">
-                Click or drag file to this area to upload
-              </p>
-              <p className="ant-upload-hint">
-                Support for a single or bulk upload.
-              </p>
-            </Upload.Dragger>
-          </Form.Item>
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">
+              Click or drag file to this area to upload
+            </p>
+            <p className="ant-upload-hint">
+              Support for a single or bulk upload.
+            </p>
+          </Upload.Dragger>
+        </Form.Item>
+        <Form.Item name="thumbnail" hidden>
+          <Input />
         </Form.Item>
       </Modal>
     </>

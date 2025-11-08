@@ -70,26 +70,20 @@ const HostItem = ({ listing }) => {
             }
             onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
           />
-          <div
-            style={{
-              position: "absolute",
-              top: "12px",
-              right: "12px",
-            }}
-          >
-            {renderPropertyType(metadata)}
-          </div>
         </div>
       }
     >
       <Meta
         title={
-          <Typography.Title
-            level={5}
-            style={{ margin: 0, fontSize: "16px", color: theme.darkMars }}
-          >
-            {title}
-          </Typography.Title>
+          <Flex justify="space-between" align="center">
+            <Typography.Title
+              level={5}
+              style={{ margin: 0, fontSize: "16px", color: theme.darkMars }}
+            >
+              {title}
+            </Typography.Title>
+            {renderPropertyType(metadata)}
+          </Flex>
         }
         description={
           <Flex align="center" gap="small" style={{ marginTop: "8px" }}>
