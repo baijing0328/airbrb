@@ -92,7 +92,7 @@ const HostItem = ({ listing }) => {
               type="secondary"
               style={{ fontSize: "14px", color: theme.marsGreen }}
             >
-              {metadata?.bedrooms || 0} Beds · {metadata?.bathrooms || 0} Baths
+              {metadata?.beds || 0} Beds · {metadata?.bathrooms || 0} Baths
             </Typography.Text>
           </Flex>
         }
@@ -137,13 +137,13 @@ const HostItem = ({ listing }) => {
         </Flex>
 
         <Flex gap="small" style={{ marginTop: "8px" }}>
-          <Button 
+          <Button
             icon={<EditOutlined />}
-            style={{ 
+            style={{
               flex: 1,
               borderColor: theme.tiffanyBlue,
               color: theme.marsGreen,
-              transition: 'all 0.3s ease'
+              transition: "all 0.3s ease",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = theme.marsGreen;
@@ -151,27 +151,27 @@ const HostItem = ({ listing }) => {
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = theme.tiffanyBlue;
-              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.backgroundColor = "transparent";
             }}
           >
             Edit
           </Button>
-          <Button 
+          <Button
             icon={<DeleteOutlined />}
             danger
-            style={{ 
+            style={{
               flex: 1,
-              transition: 'all 0.3s ease'
+              transition: "all 0.3s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#ff4d4f';
-              e.currentTarget.style.color = '#fff';
-              e.currentTarget.style.borderColor = '#ff4d4f';
+              e.currentTarget.style.backgroundColor = "#ff4d4f";
+              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.borderColor = "#ff4d4f";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = '#ff4d4f';
-              e.currentTarget.style.borderColor = '#ff4d4f';
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#ff4d4f";
+              e.currentTarget.style.borderColor = "#ff4d4f";
             }}
           >
             Delete
