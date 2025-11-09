@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Layout, Typography, Button, Flex, Spin } from "antd";
+import { useState, useEffect, useCallback } from "react";
+import { Layout, Typography, Button, Flex, Spin,message } from "antd";
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import LogoutBtn from "../../components/LogoutBtn";
@@ -19,34 +19,34 @@ const Host = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchListings = async () => {
-      try {
-        setLoading(true);
-        const response = await getListings();
-        console.log(0, response);
+  const fetchListings = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await getListings();
 
-        // Fetch details for each listing
-        const listingsWithDetails = await Promise.all(
-          response.listings.map(async (listing) => {
-            const details = await getListing(listing.id);
-            return {
-              id: listing.id,
-              details: details.listing,
-            };
-          })
-        );
+      // Fetch details for each listing
+      const listingsWithDetails = await Promise.all(
+        response.listings.map(async (listing) => {
+          const details = await getListing(listing.id);
+          return {
+            id: listing.id,
+            details: details.listing,
+          };
+        })
+      );
 
-        setListings(listingsWithDetails);
-      } catch (error) {
-        console.error("Error fetching listings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchListings();
+      setListings(listingsWithDetails);
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+      message.error("Error fetching listings");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
 
   return (
     <Layout className="host-layout">
@@ -64,7 +64,7 @@ const Host = () => {
           >
             All Listings
           </Button>
-          <CreateHostForm />
+          <CreateHostForm onSuccess={fetchListings} />
           <LogoutBtn />
         </div>
       </Header>

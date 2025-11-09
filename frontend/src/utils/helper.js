@@ -37,12 +37,42 @@ const countBeds = (bedrooms) => {
   return bedrooms.reduce((acc, curr) => acc + curr.single + curr.double, 0);
 };
 
+// Extract YouTube video ID from various YouTube URL formats
+function extractYouTubeVideoId(url) {
+  if (!url) return null;
+  
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  
+  return null;
+}
+
+// Convert YouTube URL to embed format
+function convertToEmbedUrl(url) {
+  const videoId = extractYouTubeVideoId(url);
+  if (!videoId) return null;
+  return `https://www.youtube.com/embed/${videoId}`;
+}
+
 export async function formatFormData(params) {
-  const { title, address, price, ...metadata } = params;
+  const { title, address, price, youtubeUrl, ...metadata } = params;
   let thumbnail = params.thumbnail;
   
-  // If no thumbnail provided, convert default thumbnail to data URL
-  if (!thumbnail) {
+  // If YouTube URL is provided, use it as thumbnail
+  if (youtubeUrl) {
+    const embedUrl = convertToEmbedUrl(youtubeUrl);
+    thumbnail = embedUrl || youtubeUrl;
+  } else if (!thumbnail) {
+    // If no thumbnail provided, convert default thumbnail to data URL
     thumbnail = await imageUrlToDataUrl(defaultThumbnail);
   }
   

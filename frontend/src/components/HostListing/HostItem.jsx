@@ -33,6 +33,9 @@ const HostItem = ({ listing }) => {
     sunblownYellow: "#FFBE7B",
   };
 
+  // Check if thumbnail is a YouTube embed URL
+  const isYouTubeVideo = thumbnail && thumbnail.includes("youtube.com/embed/");
+
   return (
     <Card
       hoverable
@@ -56,20 +59,37 @@ const HostItem = ({ listing }) => {
             position: "relative",
           }}
         >
-          <img
-            alt={title}
-            src={thumbnail}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              transition: "transform 0.3s ease",
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.transform = "scale(1.05)")
-            }
-            onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          />
+          {isYouTubeVideo ? (
+            <iframe
+              width="100%"
+              height="100%"
+              src={thumbnail}
+              title={title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{
+                border: "none",
+              }}
+            />
+          ) : (
+            <img
+              alt={title}
+              src={thumbnail}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                transition: "transform 0.3s ease",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.transform = "scale(1.05)")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.transform = "scale(1)")
+              }
+            />
+          )}
         </div>
       }
     >

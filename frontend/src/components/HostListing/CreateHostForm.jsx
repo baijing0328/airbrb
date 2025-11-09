@@ -59,21 +59,29 @@ const promptData = [
   "Double beds: Double, Queen, King, Super King beds.",
 ];
 
-const CreateHostForm = () => {
+const CreateHostForm = ({ onSuccess }) => {
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
   const [imagePreview, setImagePreview] = useState(null);
+  const [thumbnailType, setThumbnailType] = useState("image"); // 'image' or 'video'
+  
   const onCreate = async (values) => {
     const params = await formatFormData(values);
-    console.log(params);
     addListing(params)
       .then((response) => {
         message.success("Listing created successfully");
-        console.log(response);
         setOpen(false);
+        form.resetFields();
+        setImagePreview(null);
+        setThumbnailType("image");
+        // Refresh the listings after successful creation
+        if (onSuccess) {
+          onSuccess();
+        }
       })
       .catch((error) => {
         console.error(error);
+        message.error("Failed to create listing");
       });
   };
   return (
@@ -295,48 +303,95 @@ const CreateHostForm = () => {
         <Form.Item name="amenities" label="Property amenities">
           <Input.TextArea rows={4} />
         </Form.Item>
-        <Form.Item label="Thumbnail">
-          <Upload.Dragger
-            name="files"
-            maxCount={1}
-            beforeUpload={(file) => {
-              fileToDataUrl(file)
-                .then((dataUrl) => {
-                  form.setFieldsValue({ thumbnail: dataUrl });
-                  setImagePreview(dataUrl);
-                })
-                .catch((error) => {
-                  console.error(error);
-                  setImagePreview(null);
-                });
-              return false;
-            }}
-            onRemove={() => {
-              form.setFieldsValue({ thumbnail: null });
+        
+        <Form.Item label="Thumbnail Type">
+          <Radio.Group
+            value={thumbnailType}
+            onChange={(e) => {
+              setThumbnailType(e.target.value);
+              form.setFieldsValue({ thumbnail: null, youtubeUrl: null });
               setImagePreview(null);
             }}
           >
-            {imagePreview ? (
-              <img
-                src={imagePreview}
-                alt="preview"
-                style={{ maxHeight: "150px" }}
-              />
-            ) : (
-              <>
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
-                </p>
-                <p className="ant-upload-text">
-                  Click or drag file to this area to upload
-                </p>
-                <p className="ant-upload-hint">
-                  Support for a single or bulk upload.
-                </p>
-              </>
-            )}
-          </Upload.Dragger>
+            <Radio value="image">Image Upload</Radio>
+            <Radio value="video">YouTube Video</Radio>
+          </Radio.Group>
         </Form.Item>
+
+        {thumbnailType === "image" ? (
+          <Form.Item label="Thumbnail Image">
+            <Upload.Dragger
+              name="files"
+              maxCount={1}
+              beforeUpload={(file) => {
+                fileToDataUrl(file)
+                  .then((dataUrl) => {
+                    form.setFieldsValue({ thumbnail: dataUrl, youtubeUrl: null });
+                    setImagePreview(dataUrl);
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                    setImagePreview(null);
+                  });
+                return false;
+              }}
+              onRemove={() => {
+                form.setFieldsValue({ thumbnail: null });
+                setImagePreview(null);
+              }}
+            >
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="preview"
+                  style={{ maxHeight: "150px" }}
+                />
+              ) : (
+                <>
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">
+                    Click or drag file to this area to upload
+                  </p>
+                  <p className="ant-upload-hint">
+                    Support for image uploads (PNG, JPG, JPEG)
+                  </p>
+                </>
+              )}
+            </Upload.Dragger>
+          </Form.Item>
+        ) : (
+          <Form.Item
+            name="youtubeUrl"
+            label="YouTube URL"
+            rules={[
+              {
+                validator: async (_, value) => {
+                  if (!value) {
+                    return Promise.resolve();
+                  }
+                  const youtubeRegex =
+                    /^(https?:\/\/)?(www\.)?(youtube\.com\/(embed\/|watch\?v=)|youtu\.be\/)[\w-]+/;
+                  if (!youtubeRegex.test(value)) {
+                    return Promise.reject(
+                      new Error("Please enter a valid YouTube URL")
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <Input
+              placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+              onChange={() => {
+                form.setFieldsValue({ thumbnail: null });
+              }}
+            />
+          </Form.Item>
+        )}
+        
         <Form.Item name="thumbnail" hidden>
           <Input />
         </Form.Item>
