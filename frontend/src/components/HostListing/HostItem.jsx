@@ -85,9 +85,7 @@ const HostItem = ({ listing }) => {
               onMouseOver={(e) =>
                 (e.currentTarget.style.transform = "scale(1.05)")
               }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
+              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
             />
           )}
         </div>

@@ -13,5 +13,5 @@ export async function addListing(params) {
 }
 
 export async function getListing(listingid) {
-  return await request.get(`/listings/${listingid}`, { listingid:listingid });
+  return await request.get(`/listings/${listingid}`, { listingid: listingid });
 }

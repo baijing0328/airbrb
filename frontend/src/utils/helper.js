@@ -40,19 +40,19 @@ const countBeds = (bedrooms) => {
 // Extract YouTube video ID from various YouTube URL formats
 function extractYouTubeVideoId(url) {
   if (!url) return null;
-  
+
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
     /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
   ];
-  
+
   for (const pattern of patterns) {
     const match = url.match(pattern);
     if (match && match[1]) {
       return match[1];
     }
   }
-  
+
   return null;
 }
 
@@ -66,7 +66,7 @@ function convertToEmbedUrl(url) {
 export async function formatFormData(params) {
   const { title, address, price, youtubeUrl, ...metadata } = params;
   let thumbnail = params.thumbnail;
-  
+
   // If YouTube URL is provided, use it as thumbnail
   if (youtubeUrl) {
     const embedUrl = convertToEmbedUrl(youtubeUrl);
@@ -75,7 +75,7 @@ export async function formatFormData(params) {
     // If no thumbnail provided, convert default thumbnail to data URL
     thumbnail = await imageUrlToDataUrl(defaultThumbnail);
   }
-  
+
   metadata.beds = countBeds(metadata.bedrooms);
   return { title, address, price, thumbnail, metadata };
 }

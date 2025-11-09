@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Layout, Typography, Button, Flex, Spin,message } from "antd";
+import { Layout, Typography, Button, Flex, Spin, message } from "antd";
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import LogoutBtn from "../../components/LogoutBtn";
@@ -77,7 +77,7 @@ const Host = () => {
           ) : (
             <Flex gap="middle" wrap="wrap">
               {listings.map((listing) => {
-                return <HostItem key={listing.id} listing={listing.details} />
+                return <HostItem key={listing.id} listing={listing.details} />;
               })}
             </Flex>
           )}

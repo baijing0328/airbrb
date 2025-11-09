@@ -64,7 +64,7 @@ const CreateHostForm = ({ onSuccess }) => {
   const [form] = Form.useForm();
   const [imagePreview, setImagePreview] = useState(null);
   const [thumbnailType, setThumbnailType] = useState("image"); // 'image' or 'video'
-  
+
   const onCreate = async (values) => {
     const params = await formatFormData(values);
     addListing(params)
@@ -303,7 +303,7 @@ const CreateHostForm = ({ onSuccess }) => {
         <Form.Item name="amenities" label="Property amenities">
           <Input.TextArea rows={4} />
         </Form.Item>
-        
+
         <Form.Item label="Thumbnail Type">
           <Radio.Group
             value={thumbnailType}
@@ -326,7 +326,10 @@ const CreateHostForm = ({ onSuccess }) => {
               beforeUpload={(file) => {
                 fileToDataUrl(file)
                   .then((dataUrl) => {
-                    form.setFieldsValue({ thumbnail: dataUrl, youtubeUrl: null });
+                    form.setFieldsValue({
+                      thumbnail: dataUrl,
+                      youtubeUrl: null,
+                    });
                     setImagePreview(dataUrl);
                   })
                   .catch((error) => {
@@ -391,7 +394,7 @@ const CreateHostForm = ({ onSuccess }) => {
             />
           </Form.Item>
         )}
-        
+
         <Form.Item name="thumbnail" hidden>
           <Input />
         </Form.Item>
