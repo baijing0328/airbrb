@@ -136,7 +136,169 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
   }
 
   return (
-    
+    <Form
+      form={form}
+      layout="horizontal"
+      labelCol={{ span: 6 }}
+      wrapperCol={{ span: 14 }}
+      onFinish={handleSubmit}
+      autoComplete="off"
+    >
+      <Form.Item name="title" label="Title" rules={HostListngFormRules.title}>
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        name="address"
+        label="Address"
+        rules={HostListngFormRules.address}
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        name="price"
+        label={mode === "create" ? "Price" : "Price (per night)"}
+        rules={HostListngFormRules.price}
+      >
+        <Input addonBefore={mode === "edit" ? "$" : undefined} />
+      </Form.Item>
+
+      <Form.Item
+        name="property_type"
+        label="Property Type"
+        rules={HostListngFormRules.property_type}
+      >
+        <Radio.Group>
+          <Radio value="Apartment">Apartment</Radio>
+          <Radio value="House">House</Radio>
+          <Radio value="Townhouse">Townhouse</Radio>
+          <Radio value="Land">Land</Radio>
+        </Radio.Group>
+      </Form.Item>
+
+      <Form.Item
+        name="bathrooms"
+        label="Bathrooms"
+        rules={HostListngFormRules.bathrooms}
+      >
+        <InputNumber min={1} />
+      </Form.Item>
+
+      
+
+      <Form.Item name="amenities" label="Property amenities">
+        <Input.TextArea
+          rows={4}
+          placeholder="Describe the amenities of your property..."
+        />
+      </Form.Item>
+      <Form.Item label="Thumbnail Type">
+        <Radio.Group
+          value={thumbnailType}
+          onChange={(e) => {
+            setThumbnailType(e.target.value);
+            form.setFieldsValue({ thumbnail: null, youtubeUrl: null });
+            setImagePreview(null);
+          }}
+        >
+          <Radio value="image">Image Upload</Radio>
+          <Radio value="video">YouTube Video</Radio>
+        </Radio.Group>
+      </Form.Item>
+
+      {thumbnailType === "image" ? (
+        <Form.Item label="Thumbnail Image">
+          <Upload.Dragger
+            name="files"
+            maxCount={1}
+            beforeUpload={(file) => {
+              fileToDataUrl(file)
+                .then((dataUrl) => {
+                  form.setFieldsValue({
+                    thumbnail: dataUrl,
+                    youtubeUrl: null,
+                  });
+                  setImagePreview(dataUrl);
+                })
+                .catch((error) => {
+                  console.error(error);
+                  setImagePreview(null);
+                });
+              return false;
+            }}
+            onRemove={() => {
+              form.setFieldsValue({ thumbnail: null });
+              setImagePreview(null);
+            }}
+          >
+            {imagePreview ? (
+              <img
+                src={imagePreview}
+                alt="preview"
+                style={{ maxHeight: "150px" }}
+              />
+            ) : (
+              <>
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">
+                  Click or drag file to this area to upload
+                </p>
+                <p className="ant-upload-hint">
+                  Support for image uploads (PNG, JPG, JPEG)
+                </p>
+              </>
+            )}
+          </Upload.Dragger>
+        </Form.Item>
+      ) : (
+        <Form.Item
+          name="youtubeUrl"
+          label="YouTube URL"
+          rules={[
+            {
+              validator: async (_, value) => {
+                if (!value) {
+                  return Promise.resolve();
+                }
+                const youtubeRegex =
+                  /^(https?:\/\/)?(www\.)?(youtube\.com\/(embed\/|watch\?v=)|youtu\.be\/)[\w-]+/;
+                if (!youtubeRegex.test(value)) {
+                  return Promise.reject(
+                    new Error("Please enter a valid YouTube URL")
+                  );
+                }
+                return Promise.resolve();
+              },
+            },
+          ]}
+        >
+          <Input
+            placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+            onChange={() => {
+              form.setFieldsValue({ thumbnail: null });
+            }}
+          />
+        </Form.Item>
+      )}
+
+      <Form.Item name="thumbnail" hidden>
+        <Input />
+      </Form.Item>
+
+      <Form.Item wrapperCol={{ offset: 6, span: 14 }}>
+        <Space>
+          <Button type="primary" htmlType="submit" loading={saving}>
+            {mode === "create" ? "Create" : "Save Changes"}
+          </Button>
+          {mode === "create" && (
+            <Button onClick={() => form.resetFields()}>Reset</Button>
+          )}
+        </Space>
+      </Form.Item>
+    </Form>
   );
 };
 
