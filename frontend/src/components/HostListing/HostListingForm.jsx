@@ -185,7 +185,145 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
         <InputNumber min={1} />
       </Form.Item>
 
-      
+      <Form.Item
+        label={
+          <>
+            <span>Bedrooms</span>
+            <Popover
+              title={
+                <List
+                  size="small"
+                  bordered
+                  dataSource={HostListingPromptData}
+                  renderItem={(item) => <List.Item>{item}</List.Item>}
+                />
+              }
+            >
+              <InfoCircleOutlined style={{ marginLeft: 8 }} />
+            </Popover>
+          </>
+        }
+        required
+      >
+        <Form.List
+          name="bedrooms"
+          rules={[
+            {
+              validator: async (_, bedrooms) => {
+                if (!bedrooms || bedrooms.length < 1) {
+                  return Promise.reject(
+                    new Error("At least 1 bedroom required")
+                  );
+                }
+              },
+            },
+          ]}
+        >
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map(({ key, name, ...restField }) => (
+                <Space
+                  key={key}
+                  style={{
+                    display: "flex",
+                    marginBottom: 8,
+                    width: "100%",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <Form.Item
+                    {...restField}
+                    name={[name, "single"]}
+                    label={"Single Beds"}
+                    rules={[
+                      {
+                        validator: async (_, value) => {
+                          const doubleValue = form.getFieldValue([
+                            "bedrooms",
+                            name,
+                            "double",
+                          ]);
+                          const single = value ?? 0;
+                          const double = doubleValue ?? 0;
+
+                          if (single === 0 && double === 0) {
+                            return Promise.reject(
+                              new Error(
+                                "At least one bed (single or double) is required"
+                              )
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
+                    style={{ marginBottom: 0, flex: 1 }}
+                  >
+                    <InputNumber
+                      placeholder="Single Beds"
+                      style={{ width: "100%" }}
+                      min={0}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "double"]}
+                    label={"Double Beds"}
+                    rules={[
+                      {
+                        validator: async (_, value) => {
+                          const single =
+                            form.getFieldValue(["bedrooms", name, "single"]) ??
+                            0;
+                          const double = value ?? 0;
+
+                          if (single === 0 && double === 0) {
+                            return Promise.reject(
+                              new Error(
+                                "At least one bed (single or double) is required"
+                              )
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
+                    style={{ marginBottom: 0, flex: 1 }}
+                  >
+                    <InputNumber
+                      placeholder="Double Beds"
+                      style={{ width: "100%" }}
+                      min={0}
+                    />
+                  </Form.Item>
+                  {fields.length > 1 && (
+                    <MinusCircleOutlined
+                      onClick={() => remove(name)}
+                      style={{
+                        color: "#ff4d4f",
+                        fontSize: "18px",
+                        marginTop: "8px",
+                        cursor: "pointer",
+                      }}
+                    />
+                  )}
+                </Space>
+              ))}
+              <Button
+                type="dashed"
+                onClick={() => add()}
+                block
+                icon={<PlusOutlined />}
+                style={{
+                  marginTop: fields.length > 0 ? 8 : 0,
+                }}
+              >
+                {mode === "create" ? "Add field" : "Add bedroom"}
+              </Button>
+            </>
+          )}
+        </Form.List>
+      </Form.Item>
 
       <Form.Item name="amenities" label="Property amenities">
         <Input.TextArea
