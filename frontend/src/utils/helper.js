@@ -1,6 +1,6 @@
-// From ass3 helper.js
 import defaultThumbnail from "../assets/default-thumbnail.png";
 
+// From ass3 helper.js
 export function fileToDataUrl(file) {
   const validFileTypes = ["image/jpeg", "image/png", "image/jpg"];
   const valid = validFileTypes.find((type) => type === file.type);
