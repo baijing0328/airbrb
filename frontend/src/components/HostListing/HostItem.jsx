@@ -3,9 +3,10 @@ import {
   DollarOutlined,
   StarOutlined,
   HomeOutlined,
-  EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+import EditHostItem from "./EditHostItem";
+import { theme } from "../../utils/utils";
 const { Meta } = Card;
 
 const renderPropertyType = (metadata) => {
@@ -22,16 +23,8 @@ const renderPropertyType = (metadata) => {
   );
 };
 
-const HostItem = ({ listing }) => {
+const HostItem = ({ listing, listingId }) => {
   const { title, price, thumbnail, reviews, metadata } = listing;
-
-  const theme = {
-    tiffanyBlue: "#81D8D0",
-    marsGreen: "#2D5F5D",
-    lightTiffany: "#B3E5E0",
-    darkMars: "#1A3635",
-    sunblownYellow: "#FFBE7B",
-  };
 
   // Check if thumbnail is a YouTube embed URL
   const isYouTubeVideo = thumbnail && thumbnail.includes("youtube.com/embed/");
@@ -155,25 +148,7 @@ const HostItem = ({ listing }) => {
         </Flex>
 
         <Flex gap="small" style={{ marginTop: "8px" }}>
-          <Button
-            icon={<EditOutlined />}
-            style={{
-              flex: 1,
-              borderColor: theme.tiffanyBlue,
-              color: theme.marsGreen,
-              transition: "all 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = theme.marsGreen;
-              e.currentTarget.style.backgroundColor = theme.lightTiffany;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = theme.tiffanyBlue;
-              e.currentTarget.style.backgroundColor = "transparent";
-            }}
-          >
-            Edit
-          </Button>
+          <EditHostItem listingId={listingId} />
           <Button
             icon={<DeleteOutlined />}
             danger

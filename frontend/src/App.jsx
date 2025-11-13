@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Host from "./pages/Listing/Host";
 import All from"./pages/Listing/All";
+import EditHostListing from "./pages/Listing/EditHostListing";
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/host" element={<Host />} />
+        <Route path="/host/edit/:listingId" element={<EditHostListing />} />
         <Route path="/all" element={<All/>} />
       </Routes>
     </BrowserRouter>
