@@ -19,3 +19,7 @@ export async function getListing(listingid) {
 export async function updateListing(listingid, params) {
   return await request.put(`/listings/${listingid}`, params);
 }
+
+export async function deleteListing(listingid) {
+  return await request.delete(`/listings/${listingid}`);
+}

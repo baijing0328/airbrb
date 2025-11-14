@@ -1,11 +1,11 @@
-import { Card, Tag, Flex, Rate, Typography, Button } from "antd";
+import { Card, Tag, Flex, Rate, Typography } from "antd";
 import {
   DollarOutlined,
   StarOutlined,
   HomeOutlined,
-  DeleteOutlined,
 } from "@ant-design/icons";
 import EditHostItem from "./EditHostItem";
+import DeleteHostItem from "./DeleteHostItem";
 import { theme } from "../../utils/utils";
 const { Meta } = Card;
 
@@ -23,7 +23,7 @@ const renderPropertyType = (metadata) => {
   );
 };
 
-const HostItem = ({ listing, listingId }) => {
+const HostItem = ({ listing, listingId, onDeleteSuccess }) => {
   const { title, price, thumbnail, reviews, metadata } = listing;
 
   // Check if thumbnail is a YouTube embed URL
@@ -149,26 +149,7 @@ const HostItem = ({ listing, listingId }) => {
 
         <Flex gap="small" style={{ marginTop: "8px" }}>
           <EditHostItem listingId={listingId} />
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            style={{
-              flex: 1,
-              transition: "all 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#ff4d4f";
-              e.currentTarget.style.color = "#fff";
-              e.currentTarget.style.borderColor = "#ff4d4f";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#ff4d4f";
-              e.currentTarget.style.borderColor = "#ff4d4f";
-            }}
-          >
-            Delete
-          </Button>
+          <DeleteHostItem listingId={listingId} onSuccess={onDeleteSuccess} />
         </Flex>
       </Flex>
     </Card>
