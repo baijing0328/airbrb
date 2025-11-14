@@ -23,3 +23,11 @@ export async function updateListing(listingid, params) {
 export async function deleteListing(listingid) {
   return await request.delete(`/listings/${listingid}`);
 }
+
+export async function publishListing(listingid, availability) {
+  return await request.put(`/listings/publish/${listingid}`, { availability });
+}
+
+export async function unpublishListing(listingid) {
+  return await request.put(`/listings/unpublish/${listingid}`);
+}

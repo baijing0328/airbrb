@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import EditHostItem from "./EditHostItem";
 import DeleteHostItem from "./DeleteHostItem";
+import PublishHostItem from "./PublishHostItem";
 import { theme } from "../../utils/utils";
 const { Meta } = Card;
 
@@ -23,7 +24,7 @@ const renderPropertyType = (metadata) => {
   );
 };
 
-const HostItem = ({ listing, listingId, onDeleteSuccess }) => {
+const HostItem = ({ listing, listingId, onDeleteSuccess, onPublishSuccess, isPublished }) => {
   const { title, price, thumbnail, reviews, metadata } = listing;
 
   // Check if thumbnail is a YouTube embed URL
@@ -147,8 +148,15 @@ const HostItem = ({ listing, listingId, onDeleteSuccess }) => {
           </Typography.Text>
         </Flex>
 
-        <Flex gap="small" style={{ marginTop: "8px" }}>
-          <EditHostItem listingId={listingId} />
+        <Flex vertical gap="small" style={{ marginTop: "8px" }}>
+          <Flex gap="small">
+            <EditHostItem listingId={listingId} />
+            <PublishHostItem
+              listingId={listingId}
+              isPublished={isPublished}
+              onSuccess={onPublishSuccess}
+            />
+          </Flex>
           <DeleteHostItem listingId={listingId} onSuccess={onDeleteSuccess} />
         </Flex>
       </Flex>

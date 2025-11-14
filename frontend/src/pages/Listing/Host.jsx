@@ -77,7 +77,16 @@ const Host = () => {
           ) : (
             <Flex gap="middle" wrap="wrap">
               {listings.map((listing) => {
-                return <HostItem key={listing.id} listing={listing.details} listingId={listing.id} onDeleteSuccess={fetchListings} />;
+                return (
+                  <HostItem
+                    key={listing.id}
+                    listing={listing.details}
+                    listingId={listing.id}
+                    onDeleteSuccess={fetchListings}
+                    onPublishSuccess={fetchListings}
+                    isPublished={listing.details.published || false}
+                  />
+                );
               })}
             </Flex>
           )}
