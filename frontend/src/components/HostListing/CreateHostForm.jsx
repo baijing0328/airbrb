@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import HostListingForm from "./HostListingForm";
+import { theme } from "../../utils/utils";
 
 const CreateHostForm = ({ onSuccess }) => {
   const [open, setOpen] = useState(false);
@@ -16,9 +17,14 @@ const CreateHostForm = ({ onSuccess }) => {
   return (
     <>
       <Button
-        type="primary"
+        type="default"
         onClick={() => setOpen(true)}
         icon={<PlusOutlined />}
+        style={{
+          backgroundColor: theme.kleinBlue,
+          borderColor: theme.kleinBlue,
+          color: "#fff",
+        }}
       >
         Create new listing
       </Button>

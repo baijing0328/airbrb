@@ -4,6 +4,7 @@ export const theme = {
   lightTiffany: "#B3E5E0",
   darkMars: "#1A3635",
   sunblownYellow: "#FFBE7B",
+  kleinBlue: "#002FA7",
 };
 
 export const HostListngFormRules = {

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store/hooks";
 import { setCredentials } from "../store/slices/authSlice";
 import { loginAPI } from "../services/authService";
+import { theme } from "../utils/utils";
 import "./Login.scss";
 
 const { Content } = Layout;
@@ -86,10 +87,15 @@ const Login = () => {
 
             <Form.Item className="login-form__submit-item">
               <Button
-                type="primary"
+                type="default"
                 htmlType="submit"
                 block
                 className="login-form__submit-button"
+                style={{
+                  backgroundColor: theme.kleinBlue,
+                  borderColor: theme.kleinBlue,
+                  color: "#fff",
+                }}
               >
                 Sign In
               </Button>

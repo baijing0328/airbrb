@@ -148,17 +148,27 @@ const HostItem = ({ listing, listingId, onDeleteSuccess, onPublishSuccess, isPub
           </Typography.Text>
         </Flex>
 
-        <Flex vertical gap="small" style={{ marginTop: "8px" }}>
-          <Flex gap="small">
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            marginTop: "8px",
+          }}
+        >
+          <div style={{ flex: 1 }}>
             <EditHostItem listingId={listingId} />
+          </div>
+          <div style={{ flex: 1 }}>
             <PublishHostItem
               listingId={listingId}
               isPublished={isPublished}
               onSuccess={onPublishSuccess}
             />
-          </Flex>
-          <DeleteHostItem listingId={listingId} onSuccess={onDeleteSuccess} />
-        </Flex>
+          </div>
+          <div style={{ flex: 1 }}>
+            <DeleteHostItem listingId={listingId} onSuccess={onDeleteSuccess} />
+          </div>
+        </div>
       </Flex>
     </Card>
   );

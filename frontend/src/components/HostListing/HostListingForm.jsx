@@ -23,7 +23,7 @@ import {
   getListing,
   updateListing,
 } from "../../services/listingManageService";
-import { HostListngFormRules, HostListingPromptData } from "../../utils/utils";
+import { HostListngFormRules, HostListingPromptData, theme } from "../../utils/utils";
 
 const HostListingForm = ({ mode, onSuccess, listingId }) => {
   const [form] = Form.useForm();
@@ -428,7 +428,16 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
 
       <Form.Item wrapperCol={{ offset: 6, span: 14 }}>
         <Space>
-          <Button type="primary" htmlType="submit" loading={saving}>
+          <Button
+            type="default"
+            htmlType="submit"
+            loading={saving}
+            style={{
+              backgroundColor: theme.kleinBlue,
+              borderColor: theme.kleinBlue,
+              color: "#fff",
+            }}
+          >
             {mode === "create" ? "Create" : "Save Changes"}
           </Button>
           {mode === "create" && (

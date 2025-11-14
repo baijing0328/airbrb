@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store/hooks";
 import { setCredentials } from "../store/slices/authSlice";
 import { registerAPI } from "../services/authService";
+import { theme } from "../utils/utils";
 import "./Register.scss";
 
 const onFinishFailed = (errorInfo) => {
@@ -127,10 +128,15 @@ const Register = () => {
 
             <Form.Item className="register-form__submit-item">
               <Button
-                type="primary"
+                type="default"
                 htmlType="submit"
                 block
                 className="register-form__submit-button"
+                style={{
+                  backgroundColor: theme.kleinBlue,
+                  borderColor: theme.kleinBlue,
+                  color: "#fff",
+                }}
               >
                 Sign Up
               </Button>

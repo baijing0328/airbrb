@@ -3,6 +3,7 @@ import { Button, Modal, DatePicker, Form, message, Space, Tag } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { publishListing, unpublishListing } from "../../services/listingManageService";
 import dayjs from "dayjs";
+import { theme } from "../../utils/utils";
 
 const { RangePicker } = DatePicker;
 
@@ -59,9 +60,18 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
           type="default"
           onClick={handleUnpublish}
           style={{
-            borderColor: "#1890ff",
-            color: "#1890ff",
+            borderColor: theme.marsGreen,
+            color: theme.marsGreen,
             flex: 1,
+            transition: "all 0.3s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = theme.tiffanyBlue;
+            e.currentTarget.style.backgroundColor = theme.lightTiffany;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = theme.marsGreen;
+            e.currentTarget.style.backgroundColor = "transparent";
           }}
         >
           Unpublish
@@ -69,11 +79,23 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
       ) : (
         <>
           <Button
-            type="primary"
+            type="default"
             icon={<UploadOutlined />}
             onClick={() => setOpen(true)}
             style={{
+              backgroundColor: theme.kleinBlue,
+              borderColor: theme.kleinBlue,
+              color: "#fff",
               flex: 1,
+              transition: "all 0.3s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#001A70";
+              e.currentTarget.style.borderColor = "#001A70";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = theme.kleinBlue;
+              e.currentTarget.style.borderColor = theme.kleinBlue;
             }}
           >
             Publish
