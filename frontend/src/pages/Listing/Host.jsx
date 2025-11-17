@@ -85,6 +85,7 @@ const Host = () => {
                     onDeleteSuccess={fetchListings}
                     onPublishSuccess={fetchListings}
                     isPublished={listing.details.published || false}
+                    publishDate={listing.details.postedOn}
                   />
                 );
               })}

@@ -111,14 +111,8 @@ const All = () => {
       }
     });
 
-    console.log("listings", listings);
-    console.log("bookingsFirst", bookingsFirst);
-    console.log("remaining", remaining);
-
     return [...alphaSort(bookingsFirst), ...alphaSort(remaining)];
   }, [listings, userBookings, isLoggedIn]);
-
-  console.log("sortedListings", listings, sortedListings);
 
   return (
     <Layout className="host-layout">
@@ -155,6 +149,7 @@ const All = () => {
                     onPublishSuccess={fetchListings}
                     isPublished={listing.details.published || false}
                     showActions={false}
+                    publishDate={listing.details.postedOn}
                   />
                 );
               })}

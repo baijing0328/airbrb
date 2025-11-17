@@ -3,11 +3,13 @@ import {
   DollarOutlined,
   StarOutlined,
   HomeOutlined,
+  CalendarOutlined,
 } from "@ant-design/icons";
 import EditHostItem from "./EditHostItem";
 import DeleteHostItem from "./DeleteHostItem";
 import PublishHostItem from "./PublishHostItem";
 import { theme } from "../../utils/utils";
+import dayjs from "dayjs";
 const { Meta } = Card;
 
 const renderPropertyType = (metadata) => {
@@ -31,8 +33,25 @@ const HostItem = ({
   onPublishSuccess,
   isPublished,
   showActions = true,
+  publishDate,
 }) => {
-  const { title, price, thumbnail, reviews, metadata } = listing;
+  const { title, price, thumbnail, reviews, metadata, availability = [] } =
+    listing;
+  const formattedPublishDate = publishDate
+    ? dayjs(publishDate).format("MMM D, YYYY")
+    : null;
+
+  let formattedAvailability = [];
+  if (Array.isArray(availability)) {
+    formattedAvailability = availability
+      .filter((slot) => slot?.start && slot?.end)
+      .map((slot, index) => ({
+        id: `${slot.start}-${slot.end}-${index}`,
+        range: `${dayjs(slot.start).format("MMM D, YYYY")} - ${dayjs(
+          slot.end
+        ).format("MMM D, YYYY")}`,
+      }));
+  }
 
   // Check if thumbnail is a YouTube embed URL
   const isYouTubeVideo = thumbnail && thumbnail.includes("youtube.com/embed/");
@@ -154,6 +173,55 @@ const HostItem = ({
             {reviews?.length || 0} reviews
           </Typography.Text>
         </Flex>
+
+        {formattedPublishDate && (
+          <Typography.Text
+            type="secondary"
+            style={{ fontSize: "13px", color: theme.darkMars }}
+          >
+            Published on {formattedPublishDate}
+          </Typography.Text>
+        )}
+
+        {formattedAvailability.length > 0 && (
+          <div
+            style={{
+              backgroundColor: `${theme.lightTiffany}30`,
+              border: `1px solid ${theme.lightTiffany}`,
+              borderRadius: "8px",
+              padding: "10px 12px",
+            }}
+          >
+            <Flex justify="space-between" align="center">
+              <Typography.Text
+                strong
+                style={{ fontSize: "13px", color: theme.darkMars }}
+              >
+                Availability
+              </Typography.Text>
+              <Tag
+                color="cyan"
+                style={{ margin: 0, borderRadius: "999px", padding: "0 10px" }}
+              >
+                {formattedAvailability.length} slot
+                {formattedAvailability.length > 1 ? "s" : ""}
+              </Tag>
+            </Flex>
+            <Flex vertical gap={6} style={{ marginTop: "8px" }}>
+              {formattedAvailability.map((slot) => (
+                <Flex key={slot.id} align="center" gap={8}>
+                  <CalendarOutlined style={{ color: theme.tiffanyBlue }} />
+                  <Typography.Text
+                    type="secondary"
+                    style={{ fontSize: "13px", color: theme.marsGreen }}
+                  >
+                    {slot.range}
+                  </Typography.Text>
+                </Flex>
+              ))}
+            </Flex>
+          </div>
+        )}
 
         {showActions && (
           <div
