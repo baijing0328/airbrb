@@ -8,7 +8,7 @@ export async function getListings() {
   return await request.get("/listings");
 }
 
-export async function addListing(params) {
+export async function newListing(params) {
   return await request.post("/listings/new", params);
 }
 
@@ -30,4 +30,10 @@ export async function publishListing(listingid, availability) {
 
 export async function unpublishListing(listingid) {
   return await request.put(`/listings/unpublish/${listingid}`);
+}
+
+export async function postListingReview(listingid, bookingid, review) {
+  return await request.post(`/listings/${listingid}/review/${bookingid}`, {
+    review,
+  });
 }

@@ -19,7 +19,7 @@ import {
 } from "@ant-design/icons";
 import { fileToDataUrl, formatFormData } from "../../utils/helper";
 import {
-  addListing,
+  newListing,
   getListing,
   updateListing,
 } from "../../services/listingManageService";
@@ -104,7 +104,7 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
       params.metadata.property_images = propertyImages;
 
       if (mode === "create") {
-        await addListing(params);
+        await newListing(params);
         message.success("Listing created successfully");
         form.resetFields();
         setImagePreview(null);

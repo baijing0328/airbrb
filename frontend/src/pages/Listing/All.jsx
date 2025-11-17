@@ -4,6 +4,7 @@ import { HomeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import LogoutBtn from "../../components/LogoutBtn";
 import HostItem from "../../components/HostListing/HostItem";
+import SearchBar from "../../components/AllListing/SearchBar";
 import { getListings, getListing } from "../../services/listingManageService";
 import { getBookings } from "../../services/bookingService";
 import { useAppSelector } from "../../store/hooks";
@@ -130,6 +131,7 @@ const All = () => {
         </div>
       </Header>
       <Content className="host-content">
+        <SearchBar />
         <div className="host-content__wrapper">
           {loading ? (
             <div style={{ textAlign: "center", padding: "50px" }}>
