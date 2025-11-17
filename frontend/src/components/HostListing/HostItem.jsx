@@ -24,7 +24,14 @@ const renderPropertyType = (metadata) => {
   );
 };
 
-const HostItem = ({ listing, listingId, onDeleteSuccess, onPublishSuccess, isPublished }) => {
+const HostItem = ({
+  listing,
+  listingId,
+  onDeleteSuccess,
+  onPublishSuccess,
+  isPublished,
+  showActions = true,
+}) => {
   const { title, price, thumbnail, reviews, metadata } = listing;
 
   // Check if thumbnail is a YouTube embed URL
@@ -148,27 +155,29 @@ const HostItem = ({ listing, listingId, onDeleteSuccess, onPublishSuccess, isPub
           </Typography.Text>
         </Flex>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "8px",
-            marginTop: "8px",
-          }}
-        >
-          <div style={{ flex: 1 }}>
-            <EditHostItem listingId={listingId} />
+        {showActions && (
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              marginTop: "8px",
+            }}
+          >
+            <div style={{ flex: 1 }}>
+              <EditHostItem listingId={listingId} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <PublishHostItem
+                listingId={listingId}
+                isPublished={isPublished}
+                onSuccess={onPublishSuccess}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <DeleteHostItem listingId={listingId} onSuccess={onDeleteSuccess} />
+            </div>
           </div>
-          <div style={{ flex: 1 }}>
-            <PublishHostItem
-              listingId={listingId}
-              isPublished={isPublished}
-              onSuccess={onPublishSuccess}
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <DeleteHostItem listingId={listingId} onSuccess={onDeleteSuccess} />
-          </div>
-        </div>
+        )}
       </Flex>
     </Card>
   );
