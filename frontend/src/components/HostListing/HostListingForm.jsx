@@ -350,19 +350,18 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
           <Upload.Dragger
             name="files"
             maxCount={1}
-            beforeUpload={(file) => {
-              fileToDataUrl(file)
-                .then((dataUrl) => {
-                  form.setFieldsValue({
-                    thumbnail: dataUrl,
-                    youtubeUrl: null,
-                  });
-                  setImagePreview(dataUrl);
-                })
-                .catch((error) => {
-                  console.error(error);
-                  setImagePreview(null);
+            beforeUpload={async (file) => {
+              try {
+                const dataUrl = await fileToDataUrl(file);
+                form.setFieldsValue({
+                  thumbnail: dataUrl,
+                  youtubeUrl: null,
                 });
+                setImagePreview(dataUrl);
+              } catch (error) {
+                console.error(error);
+                setImagePreview(null);
+              }
               return false;
             }}
             onRemove={() => {

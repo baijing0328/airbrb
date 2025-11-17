@@ -19,18 +19,20 @@ export function fileToDataUrl(file) {
 }
 
 // Convert local image URL to data URL
-function imageUrlToDataUrl(url) {
-  return new Promise((resolve, reject) => {
-    fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      })
-      .catch(reject);
-  });
+async function imageUrlToDataUrl(url) {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
 
 const countBeds = (bedrooms) => {
