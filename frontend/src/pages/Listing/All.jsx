@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Layout, Typography, Button, message, Spin, Flex, Empty } from "antd";
+import { Layout, Typography, Button, message, Spin, Flex, Empty, Tag } from "antd";
 import { HomeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import LogoutBtn from "../../components/LogoutBtn";
@@ -9,6 +9,7 @@ import { getListings, getListing } from "../../services/listingManageService";
 import { getBookings } from "../../services/bookingService";
 import { useAppSelector } from "../../store/hooks";
 import "./Host.scss";
+import dayjs from "dayjs";
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -27,6 +28,7 @@ const All = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userBookings, setUserBookings] = useState([]);
+  const [searchCriteria, setSearchCriteria] = useState(null);
 
   const fetchListings = useCallback(async () => {
     try {
@@ -83,37 +85,184 @@ const All = () => {
     fetchUserBookings();
   }, [fetchUserBookings]);
 
-  const sortedListings = useMemo(() => {
-    if (!listings.length) {
+  const activeFilters = useMemo(() => {
+    if (!searchCriteria) {
       return [];
     }
 
+    const summary = [];
+    const {
+      searchText,
+      minBeds,
+      maxBeds,
+      minPrice,
+      maxPrice,
+      startDate,
+      endDate,
+      sortBy,
+    } = searchCriteria;
+
+    if (searchText) {
+      summary.push(`Keyword: "${searchText}"`);
+    }
+
+    if (minBeds !== null || maxBeds !== null) {
+      const min = minBeds ?? 0;
+      const max = maxBeds ?? "∞";
+      summary.push(`Bedrooms: ${min}-${max}`);
+    }
+
+    if (minPrice !== null || maxPrice !== null) {
+      const min = minPrice !== null ? `$${minPrice}` : "$0";
+      const max = maxPrice !== null ? `$${maxPrice}` : "∞";
+      summary.push(`Price: ${min} - ${max}`);
+    }
+
+    if (startDate && endDate) {
+      summary.push(
+        `Dates: ${dayjs(startDate).format("MMM D")} - ${dayjs(endDate).format("MMM D")}`
+      );
+    }
+
+    if (sortBy) {
+      const sortLabels = {
+        alpha_asc: "Alphabetical A→Z",
+        beds_asc: "Beds ↑",
+        beds_desc: "Beds ↓",
+        price_asc: "Price ↑",
+        price_desc: "Price ↓",
+        rating_asc: "Rating ↑",
+        rating_desc: "Rating ↓",
+      };
+      if (sortLabels[sortBy]) {
+        summary.push(`Sort: ${sortLabels[sortBy]}`);
+      }
+    }
+
+    return summary;
+  }, [searchCriteria]);
+
+  const sortedListings = useMemo(() => {
+    let filteredListings = [...listings];
+
+    if (searchCriteria) {
+      // Apply search text filter
+      if (searchCriteria.searchText) {
+        const searchText = searchCriteria.searchText.toLowerCase();
+        filteredListings = filteredListings.filter((l) => {
+          const title = l.details?.title?.toLowerCase() || "";
+          const city = l.details?.address?.city?.toLowerCase() || "";
+          return title.includes(searchText) || city.includes(searchText);
+        });
+      }
+
+      // Apply bedroom filter
+      const { minBeds, maxBeds } = searchCriteria;
+      if (minBeds !== null || maxBeds !== null) {
+        filteredListings = filteredListings.filter((l) => {
+          const numBeds = l.details?.metadata?.bedrooms || 0;
+          const min = minBeds === null ? 0 : minBeds;
+          const max = maxBeds === null ? Infinity : maxBeds;
+          return numBeds >= min && numBeds <= max;
+        });
+      }
+
+      // Apply price filter
+      const { minPrice, maxPrice } = searchCriteria;
+      if (minPrice !== null || maxPrice !== null) {
+        filteredListings = filteredListings.filter((l) => {
+          const price = l.details?.price || 0;
+          const min = minPrice === null ? 0 : minPrice;
+          const max = maxPrice === null ? Infinity : maxPrice;
+          return price >= min && price <= max;
+        });
+      }
+
+      // Date range filter
+      const { startDate, endDate } = searchCriteria;
+      if (startDate && endDate) {
+        const userStart = new Date(startDate);
+        const userEnd = new Date(endDate);
+
+        filteredListings = filteredListings.filter((l) => {
+          const availability = l.details?.availability;
+          if (!availability || availability.length === 0) {
+            return false;
+          }
+          return availability.some((range) => {
+            const availableStart = new Date(range.start);
+            const availableEnd = new Date(range.end);
+            return userStart >= availableStart && userEnd <= availableEnd;
+          });
+        });
+      }
+    }
+
+    if (!filteredListings.length) {
+      return [];
+    }
+
+    // Sorting logic
     const alphaSort = (arr) =>
       [...arr].sort((a, b) =>
         (a.details?.title || "").localeCompare(b.details?.title || "")
       );
 
-    if (!isLoggedIn || userBookings.length === 0) {
-      return alphaSort(listings);
+    if (searchCriteria && searchCriteria.sortBy) {
+      const { sortBy } = searchCriteria;
+      const getAvgRating = (reviews) => {
+        if (!reviews || reviews.length === 0) return 0;
+        const total = reviews.reduce((acc, review) => acc + review.rating, 0);
+        return total / reviews.length;
+      };
+
+      filteredListings.sort((a, b) => {
+        const aDetails = a.details;
+        const bDetails = b.details;
+        switch (sortBy) {
+        case 'beds_asc':
+          return (aDetails?.metadata?.bedrooms || 0) - (bDetails?.metadata?.bedrooms || 0);
+        case 'beds_desc':
+          return (bDetails?.metadata?.bedrooms || 0) - (aDetails?.metadata?.bedrooms || 0);
+        case 'price_asc':
+          return (aDetails?.price || 0) - (bDetails?.price || 0);
+        case 'price_desc':
+          return (bDetails?.price || 0) - (aDetails?.price || 0);
+        case 'rating_asc':
+          return getAvgRating(aDetails?.reviews) - getAvgRating(bDetails?.reviews);
+        case 'rating_desc':
+          return getAvgRating(bDetails?.reviews) - getAvgRating(aDetails?.reviews);
+        case 'alpha_asc':
+        default:
+          return (aDetails?.title || "").localeCompare(bDetails?.title || "");
+        }
+      });
+    } else {
+      // Default sort (prioritize bookings)
+      if (!isLoggedIn || userBookings.length === 0) {
+        return alphaSort(filteredListings);
+      }
+
+      const prioritizedIds = new Set(
+        userBookings.map((booking) => String(booking.listingId))
+      );
+
+      const bookingsFirst = [];
+      const remaining = [];
+
+      filteredListings.forEach((listing) => {
+        if (prioritizedIds.has(String(listing.id))) {
+          bookingsFirst.push(listing);
+        } else {
+          remaining.push(listing);
+        }
+      });
+
+      return [...alphaSort(bookingsFirst), ...alphaSort(remaining)];
     }
 
-    const prioritizedIds = new Set(
-      userBookings.map((booking) => String(booking.listingId))
-    );
-
-    const bookingsFirst = [];
-    const remaining = [];
-
-    listings.forEach((listing) => {
-      if (prioritizedIds.has(String(listing.id))) {
-        bookingsFirst.push(listing);
-      } else {
-        remaining.push(listing);
-      }
-    });
-
-    return [...alphaSort(bookingsFirst), ...alphaSort(remaining)];
-  }, [listings, userBookings, isLoggedIn]);
+    return filteredListings;
+  }, [listings, userBookings, isLoggedIn, searchCriteria]);
 
   return (
     <Layout className="host-layout">
@@ -131,8 +280,37 @@ const All = () => {
         </div>
       </Header>
       <Content className="host-content">
-        <SearchBar />
         <div className="host-content__wrapper">
+          <SearchBar
+            onSearch={setSearchCriteria}
+            onClear={() => setSearchCriteria(null)}
+          />
+          {activeFilters.length > 0 && (
+            <div
+              style={{
+                marginBottom: "24px",
+                padding: "12px 20px",
+                borderRadius: "16px",
+                border: "1px solid rgba(129, 216, 208, 0.4)",
+                background: "rgba(179, 229, 224, 0.25)",
+              }}
+            >
+              <Typography.Text strong style={{ color: "#2D5F5D" }}>
+                Active filters:
+              </Typography.Text>
+              <Flex gap="small" wrap="wrap" style={{ marginTop: "8px" }}>
+                {activeFilters.map((item) => (
+                  <Tag
+                    key={item}
+                    color="geekblue"
+                    style={{ borderRadius: "999px", padding: "4px 12px" }}
+                  >
+                    {item}
+                  </Tag>
+                ))}
+              </Flex>
+            </div>
+          )}
           {loading ? (
             <div style={{ textAlign: "center", padding: "50px" }}>
               <Spin size="large" />
