@@ -379,8 +379,173 @@ const ListingView = () => {
                   </div>
                 </Card>
               )}
+              <Flex gap="large" wrap="wrap">
+                <Card
+                  className="listing-view__card listing-view__card--glass"
+                  title="Quick facts"
+                >
+                  <Flex gap={24} wrap="wrap">
+                    <div className="listing-view__stat">
+                      <img
+                        src={bedroomIcon}
+                        alt="Bedrooms"
+                        className="listing-view__stat-icon"
+                      />
+                      <Text>{bedroomCount} bedrooms</Text>
+                    </div>
+                    <div className="listing-view__stat">
+                      <img
+                        src={bedIcon}
+                        alt="Beds"
+                        className="listing-view__stat-icon"
+                      />
+                      <Text>{bedCount} beds</Text>
+                    </div>
+                    <div className="listing-view__stat">
+                      <img
+                        src={bathroomIcon}
+                        alt="Bathrooms"
+                        className="listing-view__stat-icon"
+                      />
+                      <Text>{bathrooms} bathrooms</Text>
+                    </div>
+                  </Flex>
+                </Card>
 
-             
+                <Card
+                  className="listing-view__card listing-view__card--glass"
+                  title="Amenities"
+                >
+                  {amenities.length ? (
+                    <Flex gap="small" wrap="wrap">
+                      {amenities.map((amenity) => (
+                        <Tag
+                          key={amenity}
+                          color="geekblue"
+                          className="listing-view__amenity"
+                        >
+                          {amenity}
+                        </Tag>
+                      ))}
+                    </Flex>
+                  ) : (
+                    <Text type="secondary">No amenities listed.</Text>
+                  )}
+                </Card>
+              </Flex>
+
+              <Card
+                className="listing-view__card listing-view__card--glass"
+                title="Description"
+              >
+                <Paragraph>
+                  {listing.description ||
+                    "This host has not provided a description yet."}
+                </Paragraph>
+              </Card>
+
+              <Card
+                className="listing-view__card listing-view__card--glass listing-view__reviews"
+                title="Reviews"
+              >
+                {reviews.length === 0 ? (
+                  <Text type="secondary">No reviews yet.</Text>
+                ) : (
+                  <List
+                    itemLayout="vertical"
+                    dataSource={reviews}
+                    renderItem={(review, index) => (
+                      <List.Item
+                        key={review.id || index}
+                        className="listing-view__review-item"
+                      >
+                        <Flex justify="space-between" align="center">
+                          <Text strong>{review.reviewer || "Guest"}</Text>
+                          <Flex align="center" gap={4}>
+                            <StarFilled
+                              style={{ color: theme.sunblownYellow }}
+                            />
+                            <Text>{review.rating || "N/A"}</Text>
+                          </Flex>
+                        </Flex>
+                        <Paragraph style={{ marginTop: 8 }}>
+                          {review.comment ||
+                            review.text ||
+                            "No comment provided."}
+                        </Paragraph>
+                        {review.createdAt && (
+                          <Text type="secondary">
+                            Stayed {dayjs(review.createdAt).format("MMM YYYY")}
+                          </Text>
+                        )}
+                      </List.Item>
+                    )}
+                  />
+                )}
+              </Card>
+
+              <Card
+                className="listing-view__card listing-view__card--glass listing-view__bookings"
+                title="Your bookings for this listing"
+                extra={
+                  <Flex align="center" gap={6}>
+                    <CalendarOutlined />
+                    <Text type="secondary">
+                      {bookingStatuses.length} booking
+                      {bookingStatuses.length === 1 ? "" : "s"}
+                    </Text>
+                  </Flex>
+                }
+              >
+                {bookingsLoading ? (
+                  <Spin />
+                ) : !isLoggedIn ? (
+                  <Text type="secondary">
+                    Log in to see the status of your bookings.
+                  </Text>
+                ) : bookingStatuses.length === 0 ? (
+                  <Text type="secondary">
+                    You have no bookings for this listing yet.
+                  </Text>
+                ) : (
+                  <List
+                    dataSource={bookingStatuses}
+                    renderItem={(booking) => (
+                      <List.Item
+                        key={booking.id}
+                        className="listing-view__booking-item"
+                      >
+                        <Flex
+                          justify="space-between"
+                          align="center"
+                          wrap="wrap"
+                        >
+                          <div>
+                            <Text strong>Status: </Text>
+                            <Tag color={getBookingStatusColor(booking.status)}>
+                              {booking.status || "Unknown"}
+                            </Tag>
+                            <div>
+                              <Text>{renderBookingDateRange(booking)}</Text>
+                            </div>
+                          </div>
+                          <div>
+                            <Text type="secondary">
+                              Booking ID: {booking.id}
+                            </Text>
+                            {booking.totalPrice && (
+                              <div>
+                                <DollarOutlined style={{ marginRight: 4 }} />
+                                <Text>${booking.totalPrice}</Text>
+                              </div>
+                            )}
+                          </div>
+                        </Flex>
+                      </List.Item>
+                    )}
+                  />
+                )}
+              </Card>
             </div>
           )}
         </div>
