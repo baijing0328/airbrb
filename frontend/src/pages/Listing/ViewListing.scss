@@ -142,6 +142,34 @@
   backdrop-filter: blur(6px);
 }
 
+.listing-view__booking-form {
+  .ant-picker-range {
+    width: 100%;
+    border-radius: 18px;
+    padding: 8px 12px;
+    border-color: rgba(45, 95, 93, 0.18);
+    transition: all 0.2s ease;
+
+    &:hover,
+    &:focus-within {
+      border-color: #81d8d0;
+      box-shadow: 0 0 0 2px rgba(129, 216, 208, 0.25);
+    }
+  }
+
+  .ant-btn-primary {
+    border-radius: 999px;
+    padding: 0 28px;
+    box-shadow: 0 15px 30px rgba(45, 95, 93, 0.25);
+  }
+
+  .ant-typography-secondary {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
 .listing-view__amenity {
   border-radius: 999px;
   padding: 4px 14px;

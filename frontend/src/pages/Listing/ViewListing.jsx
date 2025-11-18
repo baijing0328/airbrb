@@ -13,6 +13,7 @@ import {
   List,
   Divider,
   Empty,
+  DatePicker,
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -24,7 +25,7 @@ import {
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import dayjs from "dayjs";
 import { getListing } from "../../services/listingManageService";
-import { getBookings } from "../../services/bookingService";
+import { getBookings, newBooking } from "../../services/bookingService";
 import { useAppSelector } from "../../store/hooks";
 import { theme } from "../../utils/utils";
 import LogoutBtn from "../../components/LogoutBtn";
@@ -35,6 +36,7 @@ import "./ViewListing.scss";
 
 const { Header, Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
+const { RangePicker } = DatePicker;
 
 const ListingView = () => {
   const { listingId } = useParams();
@@ -44,6 +46,8 @@ const ListingView = () => {
   const [loading, setLoading] = useState(true);
   const [bookingStatuses, setBookingStatuses] = useState([]);
   const [bookingsLoading, setBookingsLoading] = useState(false);
+  const [bookingRange, setBookingRange] = useState([null, null]);
+  const [bookingSubmitting, setBookingSubmitting] = useState(false);
   const { user, token, isAuthenticated } = useAppSelector(
     (state) => state.auth
   );
@@ -151,6 +155,17 @@ const ListingView = () => {
   }, [reviews]);
 
   const metadata = listing?.metadata || {};
+  const availabilityRanges = useMemo(() => {
+    if (!listing?.availability || listing.availability.length === 0) {
+      return [];
+    }
+    return listing.availability
+      .filter((slot) => slot.start && slot.end)
+      .map((slot) => ({
+        start: dayjs(slot.start).startOf("day"),
+        end: dayjs(slot.end).startOf("day"),
+      }));
+  }, [listing]);
   const bedroomCount = useMemo(() => {
     if (Array.isArray(metadata.bedrooms)) {
       return metadata.bedrooms.length;
@@ -190,6 +205,48 @@ const ListingView = () => {
   const stayPrice = hasSearchDates ? nightlyPrice * nights : nightlyPrice;
   const priceLabel = hasSearchDates ? "Price per stay" : "Price per night";
 
+  const bookingSelection = useMemo(() => {
+    if (!bookingRange[0] || !bookingRange[1]) {
+      return { nights: 0, total: 0 };
+    }
+    const diff = bookingRange[1].diff(bookingRange[0], "day");
+    const nightsCount = Math.max(1, diff);
+    return {
+      nights: nightsCount,
+      total: nightsCount * nightlyPrice,
+    };
+  }, [bookingRange, nightlyPrice]);
+
+  const bookingSelectionLabel = useMemo(() => {
+    if (bookingSelection.nights > 0) {
+      const unit = bookingSelection.nights === 1 ? "night" : "nights";
+      return `${bookingSelection.nights} ${unit} selected`;
+    }
+    return "Select dates to see total";
+  }, [bookingSelection.nights]);
+
+  const isDateWithinAvailability = (date) =>
+    availabilityRanges.some(
+      (range) =>
+        date.isSame(range.start, "day") ||
+        date.isSame(range.end, "day") ||
+        (date.isAfter(range.start, "day") && date.isBefore(range.end, "day"))
+    );
+
+  const isRangeWithinAvailability = (start, end) =>
+    availabilityRanges.some(
+      (range) =>
+        start.isSameOrAfter(range.start, "day") &&
+        end.isSameOrBefore(range.end, "day")
+    );
+
+  const disabledBookingDate = (current) => {
+    if (!availabilityRanges.length || !current) {
+      return false;
+    }
+    return !isDateWithinAvailability(current);
+  };
+
   const renderBookingDateRange = (booking) => {
     const start =
       booking.dateRange?.start ||
@@ -228,6 +285,48 @@ const ListingView = () => {
       return "orange";
     }
     return "red";
+  };
+
+  const handleBookingSubmit = async () => {
+    if (!isLoggedIn) {
+      message.warning("Please log in to make a booking.");
+      return;
+    }
+    if (!bookingRange[0] || !bookingRange[1]) {
+      message.warning("Please select a start and end date.");
+      return;
+    }
+    const [start, end] = bookingRange;
+    const bookingStart = start.startOf("day");
+    const bookingEnd = end.startOf("day");
+
+    const fitsAvailability = isRangeWithinAvailability(bookingStart, bookingEnd);
+
+    if (!fitsAvailability) {
+      message.error("Selected dates are not available for this listing.");
+      return;
+    }
+
+    const totalPrice = bookingSelection.total || bookingSelection.nights * nightlyPrice;
+
+    try {
+      setBookingSubmitting(true);
+      await newBooking(listingId, {
+        dateRange: {
+          start: bookingStart.toISOString(),
+          end: bookingEnd.toISOString(),
+        },
+        totalPrice,
+      });
+      message.success("Booking request submitted!");
+      setBookingRange([null, null]);
+      fetchUserBookings();
+    } catch (error) {
+      console.error("Booking failed:", error);
+      message.error("Unable to create booking. Please try again.");
+    } finally {
+      setBookingSubmitting(false);
+    }
   };
 
   return (
@@ -379,6 +478,49 @@ const ListingView = () => {
                   </div>
                 </Card>
               )}
+              <Card
+                className="listing-view__card listing-view__card--glass listing-view__booking-form"
+                title="Book this stay"
+              >
+                {isLoggedIn ? (
+                  <Flex vertical gap="large">
+                    <div>
+                      <Text strong>Select your dates</Text>
+                      <RangePicker
+                        value={bookingRange}
+                        onChange={(dates) => setBookingRange(dates || [null, null])}
+                        style={{ width: "100%", marginTop: 8 }}
+                        disabledDate={disabledBookingDate}
+                      />
+                    </div>
+                    <Flex justify="space-between" align="center" wrap="wrap">
+                      <div>
+                        <Text type="secondary">{bookingSelectionLabel}</Text>
+                        {bookingSelection.total > 0 && (
+                          <Title
+                            level={4}
+                            style={{ margin: 0, color: theme.marsGreen }}
+                          >
+                            ${bookingSelection.total.toLocaleString()}
+                          </Title>
+                        )}
+                      </div>
+                      <Button
+                        type="primary"
+                        size="large"
+                        onClick={handleBookingSubmit}
+                        loading={bookingSubmitting}
+                      >
+                        Request booking
+                      </Button>
+                    </Flex>
+                  </Flex>
+                ) : (
+                  <Text type="secondary">
+                    Log in to select dates and request a booking.
+                  </Text>
+                )}
+              </Card>
               <Flex gap="large" wrap="wrap">
                 <Card
                   className="listing-view__card listing-view__card--glass"
