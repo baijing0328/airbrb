@@ -94,6 +94,11 @@ const All = () => {
   useEffect(() => {
     fetchUserBookings();
   }, [fetchUserBookings]);
+  const handleListingClick = (listingId) => {
+    navigate(`/listing/${listingId}`, {
+      state: searchCriteria ? { searchCriteria } : undefined,
+    });
+  };
 
   const activeFilters = useMemo(() => {
     if (!searchCriteria) {
@@ -343,6 +348,7 @@ const All = () => {
                     isPublished={listing.details.published || false}
                     showActions={false}
                     publishDate={listing.details.postedOn}
+                    onCardClick={() => handleListingClick(listing.id)}
                   />
                 );
               })}

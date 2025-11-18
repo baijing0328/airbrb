@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Host from "./pages/Listing/Host";
 import All from "./pages/Listing/All";
 import EditHostListing from "./pages/Listing/EditHostListing";
+import ListingView from "./pages/Listing/ViewListing";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/host" element={<Host />} />
         <Route path="/host/edit/:listingId" element={<EditHostListing />} />
         <Route path="/all" element={<All />} />
+        <Route path="/listing/:listingId" element={<ListingView />} />
       </Routes>
     </BrowserRouter>
   );

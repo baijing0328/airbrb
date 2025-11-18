@@ -34,6 +34,7 @@ const HostItem = ({
   isPublished,
   showActions = true,
   publishDate,
+  onCardClick,
 }) => {
   const {
     title,
@@ -72,7 +73,9 @@ const HostItem = ({
         boxShadow: `0 2px 8px ${theme.tiffanyBlue}40`,
         transition: "all 0.3s ease",
         border: `1px solid ${theme.lightTiffany}`,
+        cursor: onCardClick ? "pointer" : "default",
       }}
+      onClick={onCardClick}
       styles={{
         body: { padding: "16px" },
         cover: { overflow: "hidden", height: "200px" },
