@@ -183,5 +183,28 @@
   background: linear-gradient(135deg, rgba(129, 216, 208, 0.12), #fff);
 }
 
+@media (max-width: 768px) {
+  .listing-view__price {
+    text-align: left;
+    margin-top: 12px;
+  }
 
+  .listing-view__media-grid {
+    grid-template-columns: 1fr;
+  }
 
+  .listing-view__media-item {
+    &.listing-view__media-item--0 {
+      grid-column: span 1;
+    }
+  }
+
+  .listing-view__stats-pill {
+    min-width: 140px;
+    width: 100%;
+  }
+
+  .listing-view__card {
+    border-radius: 18px;
+  }
+}
