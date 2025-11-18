@@ -249,7 +249,142 @@ const ListingView = () => {
           <LogoutBtn />
         </Flex>
       </Header>
-      <Content className="host-content">test</Content>
+      <Content className="host-content">
+        <div className="host-content__wrapper">
+          {loading ? (
+            <div className="listing-view__loading">
+              <Spin size="large" />
+            </div>
+          ) : !listing ? (
+            <Empty description="Listing not found." />
+          ) : (
+            <div className="listing-view__content">
+              <Card className="listing-view__summary" bordered={false}>
+                <Flex justify="space-between" align="flex-start" wrap="wrap">
+                  <div>
+                    <Tag color="cyan" style={{ marginBottom: 12 }}>
+                      {metadata.property_type || "Property"}
+                    </Tag>
+                    <Title level={2} style={{ marginBottom: 8 }}>
+                      {listing.title}
+                    </Title>
+                    <Flex align="center" gap={8} style={{ marginBottom: 8 }}>
+                      <EnvironmentOutlined
+                        style={{ color: theme.tiffanyBlue }}
+                      />
+                      <Text type="secondary">
+                        {listing.address || "Address unavailable"}
+                      </Text>
+                    </Flex>
+                    <Flex align="center" gap={6}>
+                      <Rate allowHalf disabled value={averageRating} />
+                      <Text strong>
+                        {averageRating.toFixed(1)} · {reviews.length} review
+                        {reviews.length === 1 ? "" : "s"}
+                      </Text>
+                    </Flex>
+                  </div>
+                  <div className="listing-view__price">
+                    <Text type="secondary">{priceLabel}</Text>
+                    <Title
+                      level={3}
+                      style={{ color: theme.marsGreen, margin: 0 }}
+                    >
+                      ${stayPrice.toLocaleString()}
+                    </Title>
+                    <Text type="secondary">{renderPriceBreakdown()}</Text>
+                  </div>
+                </Flex>
+                <Divider className="listing-view__divider" />
+                <Flex
+                  className="listing-view__stats-bar"
+                  gap="large"
+                  wrap="wrap"
+                >
+                  <div className="listing-view__stats-pill">
+                    <img
+                      src={bedroomIcon}
+                      alt="Bedrooms"
+                      className="listing-view__stats-pill-icon"
+                    />
+                    <div>
+                      <Text strong>{bedroomCount}</Text>
+                      <Text type="secondary">Bedrooms</Text>
+                    </div>
+                  </div>
+                  <div className="listing-view__stats-pill">
+                    <img
+                      src={bedIcon}
+                      alt="Beds"
+                      className="listing-view__stats-pill-icon"
+                    />
+                    <div>
+                      <Text strong>{bedCount}</Text>
+                      <Text type="secondary">Beds</Text>
+                    </div>
+                  </div>
+                  <div className="listing-view__stats-pill">
+                    <img
+                      src={bathroomIcon}
+                      alt="Bathrooms"
+                      className="listing-view__stats-pill-icon"
+                    />
+                    <div>
+                      <Text strong>{bathrooms}</Text>
+                      <Text type="secondary">Bathrooms</Text>
+                    </div>
+                  </div>
+                  {hasSearchDates && (
+                    <div className="listing-view__stats-pill">
+                      <CalendarOutlined />
+                      <div>
+                        <Text strong>{nights}</Text>
+                        <Text type="secondary">Night stay</Text>
+                      </div>
+                    </div>
+                  )}
+                </Flex>
+              </Card>
+
+              {mediaItems.length > 0 && (
+                <Card className="listing-view__media" bordered={false}>
+                  <div className="listing-view__media-grid">
+                    {mediaItems.map((media, index) => (
+                      <div
+                        key={`${media.src}-${index}`}
+                        className={`listing-view__media-item listing-view__media-item--${index}`}
+                      >
+                        {media.type === "video" ? (
+                          <div className="listing-view__media-video">
+                            <iframe
+                              src={media.src}
+                              title={`${listing.title}-video-${index + 1}`}
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          </div>
+                        ) : (
+                          <Image
+                            src={media.src}
+                            alt={`${listing.title}-image-${index + 1}`}
+                            className="listing-view__media-image"
+                            height="100%"
+                            width="100%"
+                            style={{ objectFit: "cover" }}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
+             
+            </div>
+          )}
+        </div>
+      </Content>
     </Layout>
   );
 };
