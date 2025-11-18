@@ -1,7 +1,26 @@
 import { useState, useEffect } from "react";
-import { Button, Modal, DatePicker, Form, message, Space, Tag, Dropdown } from "antd";
-import { UploadOutlined, EditOutlined, DeleteOutlined, DownOutlined } from "@ant-design/icons";
-import { publishListing, unpublishListing, updateListing, getListing } from "../../services/listingManageService";
+import {
+  Button,
+  Modal,
+  DatePicker,
+  Form,
+  message,
+  Space,
+  Tag,
+  Dropdown,
+} from "antd";
+import {
+  UploadOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  DownOutlined,
+} from "@ant-design/icons";
+import {
+  publishListing,
+  unpublishListing,
+  updateListing,
+  getListing,
+} from "../../services/listingManageService";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
@@ -43,9 +62,9 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
 
     setLoading(true);
     try {
-      const availability = values.availability.map(range => ({
-        start: range[0].format('YYYY-MM-DD'),
-        end: range[1].format('YYYY-MM-DD')
+      const availability = values.availability.map((range) => ({
+        start: range[0].format("YYYY-MM-DD"),
+        end: range[1].format("YYYY-MM-DD"),
       }));
 
       await publishListing(listingId, availability);
@@ -71,14 +90,14 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
 
     setLoading(true);
     try {
-      const newRanges = values.availability.map(range => ({
-        start: range[0].format('YYYY-MM-DD'),
-        end: range[1].format('YYYY-MM-DD')
+      const newRanges = values.availability.map((range) => ({
+        start: range[0].format("YYYY-MM-DD"),
+        end: range[1].format("YYYY-MM-DD"),
       }));
 
       // Merge with existing availability
       const combinedRanges = [...currentAvailability, ...newRanges];
-      
+
       // Merge adjacent/overlapping date ranges
       const updatedAvailability = mergeDateRanges(combinedRanges);
 
@@ -92,8 +111,8 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
         price: listing.price,
         metadata: {
           ...listing.metadata,
-          availability: updatedAvailability
-        }
+          availability: updatedAvailability,
+        },
       });
 
       // Since backend doesn't have direct availability update, we need to unpublish and republish
@@ -134,15 +153,15 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
 
   const menuItems = [
     {
-      key: 'edit',
+      key: "edit",
       icon: <EditOutlined />,
-      label: 'Edit Availability',
+      label: "Edit Availability",
       onClick: () => handleOpenModal("edit"),
     },
     {
-      key: 'unpublish',
+      key: "unpublish",
       icon: <DeleteOutlined />,
-      label: 'Unpublish',
+      label: "Unpublish",
       danger: true,
       onClick: handleUnpublish,
     },
@@ -151,7 +170,7 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
   return (
     <>
       {isPublished ? (
-        <Dropdown menu={{ items: menuItems }} trigger={['click']}>
+        <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
           <Button
             type="default"
             style={{
@@ -211,9 +230,11 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
         <Form
           form={form}
           layout="vertical"
-          onFinish={modalMode === "publish" ? handlePublish : handleUpdateAvailability}
+          onFinish={
+            modalMode === "publish" ? handlePublish : handleUpdateAvailability
+          }
           initialValues={{
-            availability: []
+            availability: [],
           }}
         >
           <Form.Item
@@ -227,7 +248,9 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
               {
                 validator: (_, value) => {
                   if (!value || value.length === 0) {
-                    return Promise.reject("Please add at least one availability range");
+                    return Promise.reject(
+                      "Please add at least one availability range"
+                    );
                   }
                   return Promise.resolve();
                 },
@@ -242,7 +265,11 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
   );
 };
 
-const AvailabilityRangeSelector = ({ value = [], onChange, existingRanges = [] }) => {
+const AvailabilityRangeSelector = ({
+  value = [],
+  onChange,
+  existingRanges = [],
+}) => {
   const [ranges, setRanges] = useState(value);
 
   const handleAddRange = () => {
@@ -264,17 +291,76 @@ const AvailabilityRangeSelector = ({ value = [], onChange, existingRanges = [] }
     onChange?.(newRanges);
   };
 
+  // Get all disabled dates from existing ranges and other selected ranges
+  const getDisabledDate = (currentIndex) => (current) => {
+    if (!current) {
+      return false;
+    }
+
+    // Ensure current is a dayjs object
+    const currentDay = dayjs(current);
+
+    // Disable past dates
+    if (currentDay.isBefore(dayjs().startOf("day"))) {
+      return true;
+    }
+
+    // Check overlap with existing ranges
+    for (const existingRange of existingRanges) {
+      const start = dayjs(existingRange.start);
+      const end = dayjs(existingRange.end);
+      if (
+        currentDay.isSameOrAfter(start, "day") &&
+        currentDay.isSameOrBefore(end, "day")
+      ) {
+        return true;
+      }
+    }
+
+    // Check overlap with other currently selected ranges (excluding current one)
+    for (let i = 0; i < ranges.length; i++) {
+      if (i === currentIndex) continue;
+      const range = ranges[i];
+      if (range && range[0] && range[1]) {
+        const start = dayjs(range[0]);
+        const end = dayjs(range[1]);
+        if (
+          currentDay.isSameOrAfter(start, "day") &&
+          currentDay.isSameOrBefore(end, "day")
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
   return (
     <div>
       {existingRanges.length > 0 && (
-        <div style={{ marginBottom: "16px", padding: "12px", backgroundColor: "#f5f5f5", borderRadius: "4px" }}>
-          <div style={{ marginBottom: "8px", fontWeight: "bold", fontSize: "14px" }}>
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "12px",
+            backgroundColor: "#f5f5f5",
+            borderRadius: "4px",
+          }}
+        >
+          <div
+            style={{
+              marginBottom: "8px",
+              fontWeight: "bold",
+              fontSize: "14px",
+            }}
+          >
             Current Availability:
           </div>
           <Space wrap>
             {existingRanges.map((range, index) => (
               <Tag key={index} color="green">
-                {dayjs(range.start).format('MMM D')} - {dayjs(range.end).format('MMM D, YYYY')}
+                {dayjs(range.start).format("MMM D")} -{" "}
+                {dayjs(range.end).format("MMM D, YYYY")}
               </Tag>
             ))}
           </Space>
@@ -316,7 +402,8 @@ const AvailabilityRangeSelector = ({ value = [], onChange, existingRanges = [] }
               if (range && range[0] && range[1]) {
                 return (
                   <Tag key={index} color="blue">
-                    {dayjs(range[0]).format('MMM D')} - {dayjs(range[1]).format('MMM D, YYYY')}
+                    {dayjs(range[0]).format("MMM D")} -{" "}
+                    {dayjs(range[1]).format("MMM D, YYYY")}
                   </Tag>
                 );
               }
