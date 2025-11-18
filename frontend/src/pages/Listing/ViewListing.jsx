@@ -26,7 +26,10 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import dayjs from "dayjs";
-import { getListing, postListingReview } from "../../services/listingManageService";
+import {
+  getListing,
+  postListingReview,
+} from "../../services/listingManageService";
 import { getBookings, newBooking } from "../../services/bookingService";
 import { useAppSelector } from "../../store/hooks";
 import { theme } from "../../utils/utils";
@@ -90,7 +93,9 @@ const ListingView = () => {
           String(booking.listingId) === String(listingId)
       );
       setBookingStatuses(relevant);
-      const accepted = relevant.filter((booking) => booking.status === "accepted");
+      const accepted = relevant.filter(
+        (booking) => booking.status === "accepted"
+      );
       if (accepted.length > 0 && !selectedBookingId) {
         setSelectedBookingId(String(accepted[0].id));
       }
@@ -316,14 +321,18 @@ const ListingView = () => {
     const bookingStart = start.startOf("day");
     const bookingEnd = end.startOf("day");
 
-    const fitsAvailability = isRangeWithinAvailability(bookingStart, bookingEnd);
+    const fitsAvailability = isRangeWithinAvailability(
+      bookingStart,
+      bookingEnd
+    );
 
     if (!fitsAvailability) {
       message.error("Selected dates are not available for this listing.");
       return;
     }
 
-    const totalPrice = bookingSelection.total || bookingSelection.nights * nightlyPrice;
+    const totalPrice =
+      bookingSelection.total || bookingSelection.nights * nightlyPrice;
 
     try {
       setBookingSubmitting(true);
@@ -378,7 +387,10 @@ const ListingView = () => {
   };
 
   const handleScrollToBookings = () => {
-    bookingsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    bookingsSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   return (
@@ -549,7 +561,9 @@ const ListingView = () => {
                       <Text strong>Select your dates</Text>
                       <RangePicker
                         value={bookingRange}
-                        onChange={(dates) => setBookingRange(dates || [null, null])}
+                        onChange={(dates) =>
+                          setBookingRange(dates || [null, null])
+                        }
                         style={{ width: "100%", marginTop: 8 }}
                         disabledDate={disabledBookingDate}
                       />
@@ -589,7 +603,8 @@ const ListingView = () => {
                 >
                   {acceptedBookings.length === 0 ? (
                     <Text type="secondary">
-                      You need at least one accepted booking before leaving a review.
+                      You need at least one accepted booking before leaving a
+                      review.
                     </Text>
                   ) : (
                     <Flex vertical gap="large">
@@ -601,7 +616,9 @@ const ListingView = () => {
                           style={{ marginTop: 8, width: "100%" }}
                           options={acceptedBookings.map((booking) => ({
                             value: String(booking.id),
-                            label: `Booking #${booking.id} · ${renderBookingDateRange(booking)}`,
+                            label: `Booking #${
+                              booking.id
+                            } · ${renderBookingDateRange(booking)}`,
                           }))}
                         />
                       </div>
