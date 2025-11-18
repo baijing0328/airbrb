@@ -74,10 +74,29 @@
 }
 
 .listing-view__price {
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
 
-  .ant-typography-secondary {
-    font-size: 13px;
+  .listing-view__price-info {
+    text-align: right;
+
+    .ant-typography-secondary {
+      font-size: 13px;
+    }
+  }
+
+  .listing-view__bookings-btn {
+    align-self: flex-end;
+    border-radius: 999px;
+    border-color: rgba(45, 95, 93, 0.2);
+    color: #2d5f5d;
+
+    &:hover {
+      color: #1a3635;
+      border-color: #1a3635;
+    }
   }
 }
 
@@ -209,6 +228,44 @@
 
 .listing-view__bookings .listing-view__booking-item {
   background: linear-gradient(135deg, rgba(129, 216, 208, 0.12), #fff);
+}
+
+.booking-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.booking-item__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .booking-item__status-tag {
+    border-radius: 12px;
+    padding: 2px 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+}
+
+.booking-item__body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .booking-item__price {
+    align-items: flex-end;
+    text-align: right;
+  }
 }
 
 @media (max-width: 768px) {

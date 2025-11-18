@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   Layout,
   Typography,
@@ -54,6 +54,7 @@ const ListingView = () => {
   const [reviewComment, setReviewComment] = useState("");
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const bookingsSectionRef = useRef(null);
   const { user, token, isAuthenticated } = useAppSelector(
     (state) => state.auth
   );
@@ -376,6 +377,10 @@ const ListingView = () => {
     }
   };
 
+  const handleScrollToBookings = () => {
+    bookingsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <Layout className="host-layout listing-view">
       <Header className="host-header listing-view__header">
@@ -431,14 +436,23 @@ const ListingView = () => {
                     </Flex>
                   </div>
                   <div className="listing-view__price">
-                    <Text type="secondary">{priceLabel}</Text>
-                    <Title
-                      level={3}
-                      style={{ color: theme.marsGreen, margin: 0 }}
+                    <div className="listing-view__price-info">
+                      <Text type="secondary">{priceLabel}</Text>
+                      <Title
+                        level={3}
+                        style={{ color: theme.marsGreen, margin: 0 }}
+                      >
+                        ${stayPrice.toLocaleString()}
+                      </Title>
+                      <Text type="secondary">{renderPriceBreakdown()}</Text>
+                    </div>
+                    <Button
+                      className="listing-view__bookings-btn"
+                      icon={<CalendarOutlined />}
+                      onClick={handleScrollToBookings}
                     >
-                      ${stayPrice.toLocaleString()}
-                    </Title>
-                    <Text type="secondary">{renderPriceBreakdown()}</Text>
+                      My bookings
+                    </Button>
                   </div>
                 </Flex>
                 <Divider className="listing-view__divider" />
@@ -727,68 +741,71 @@ const ListingView = () => {
                 )}
               </Card>
 
-              <Card
-                className="listing-view__card listing-view__card--glass listing-view__bookings"
-                title="Your bookings for this listing"
-                extra={
-                  <Flex align="center" gap={6}>
-                    <CalendarOutlined />
+              <div ref={bookingsSectionRef}>
+                <Card
+                  className="listing-view__card listing-view__card--glass listing-view__bookings"
+                  title="Your bookings for this listing"
+                  extra={
+                    <Flex align="center" gap={6}>
+                      <CalendarOutlined />
+                      <Text type="secondary">
+                        {bookingStatuses.length} booking
+                        {bookingStatuses.length === 1 ? "" : "s"}
+                      </Text>
+                    </Flex>
+                  }
+                >
+                  {bookingsLoading ? (
+                    <Spin />
+                  ) : !isLoggedIn ? (
                     <Text type="secondary">
-                      {bookingStatuses.length} booking
-                      {bookingStatuses.length === 1 ? "" : "s"}
+                      Log in to see the status of your bookings.
                     </Text>
-                  </Flex>
-                }
-              >
-                {bookingsLoading ? (
-                  <Spin />
-                ) : !isLoggedIn ? (
-                  <Text type="secondary">
-                    Log in to see the status of your bookings.
-                  </Text>
-                ) : bookingStatuses.length === 0 ? (
-                  <Text type="secondary">
-                    You have no bookings for this listing yet.
-                  </Text>
-                ) : (
-                  <List
-                    dataSource={bookingStatuses}
-                    renderItem={(booking) => (
-                      <List.Item
-                        key={booking.id}
-                        className="listing-view__booking-item"
-                      >
-                        <Flex
-                          justify="space-between"
-                          align="center"
-                          wrap="wrap"
+                  ) : bookingStatuses.length === 0 ? (
+                    <Text type="secondary">
+                      You have no bookings for this listing yet.
+                    </Text>
+                  ) : (
+                    <List
+                      dataSource={bookingStatuses}
+                      renderItem={(booking) => (
+                        <List.Item
+                          key={booking.id}
+                          className="listing-view__booking-item"
                         >
-                          <div>
-                            <Text strong>Status: </Text>
-                            <Tag color={getBookingStatusColor(booking.status)}>
-                              {booking.status || "Unknown"}
-                            </Tag>
+                          <div className="booking-item__header">
+                            <div className="booking-item__status">
+                              <Text strong>Status</Text>
+                              <Tag
+                                color={getBookingStatusColor(booking.status)}
+                                className="booking-item__status-tag"
+                              >
+                                {booking.status || "Unknown"}
+                              </Tag>
+                            </div>
+                            <Text type="secondary">Booking #{booking.id}</Text>
+                          </div>
+                          <div className="booking-item__body">
                             <div>
+                              <Text type="secondary">Dates</Text>
                               <Text>{renderBookingDateRange(booking)}</Text>
                             </div>
-                          </div>
-                          <div>
-                            <Text type="secondary">
-                              Booking ID: {booking.id}
-                            </Text>
                             {booking.totalPrice && (
-                              <div>
-                                <DollarOutlined style={{ marginRight: 4 }} />
-                                <Text>${booking.totalPrice}</Text>
+                              <div className="booking-item__price">
+                                <Text type="secondary">Total</Text>
+                                <Flex align="center" gap={6}>
+                                  <DollarOutlined />
+                                  <Text>{booking.totalPrice}</Text>
+                                </Flex>
                               </div>
                             )}
                           </div>
-                        </Flex>
-                      </List.Item>
-                    )}
-                  />
-                )}
-              </Card>
+                        </List.Item>
+                      )}
+                    />
+                  )}
+                </Card>
+              </div>
             </div>
           )}
         </div>
