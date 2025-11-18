@@ -168,7 +168,68 @@ const ListingView = () => {
       0
     );
   }
-  
+  const bedCount = metadata.beds ?? derivedBedCount;
+
+  const bathrooms = metadata.bathrooms ?? 0;
+
+  const hasSearchDates =
+    searchContext?.startDate && searchContext?.endDate
+      ? dayjs(searchContext.endDate).isAfter(dayjs(searchContext.startDate))
+      : false;
+
+  let nightsDifference = 0;
+  if (hasSearchDates) {
+    nightsDifference = dayjs(searchContext.endDate).diff(
+      dayjs(searchContext.startDate),
+      "day"
+    );
+  }
+  const nights = hasSearchDates ? Math.max(1, nightsDifference) : 0;
+
+  const nightlyPrice = Number(listing?.price) || 0;
+  const stayPrice = hasSearchDates ? nightlyPrice * nights : nightlyPrice;
+  const priceLabel = hasSearchDates ? "Price per stay" : "Price per night";
+
+  const renderBookingDateRange = (booking) => {
+    const start =
+      booking.dateRange?.start ||
+      booking.start ||
+      booking.date?.start ||
+      booking.startDate;
+    const end =
+      booking.dateRange?.end ||
+      booking.end ||
+      booking.date?.end ||
+      booking.endDate;
+
+    if (start && end) {
+      return `${dayjs(start).format("MMM D, YYYY")} - ${dayjs(end).format(
+        "MMM D, YYYY"
+      )}`;
+    }
+    return "Dates unavailable";
+  };
+
+  const renderPriceBreakdown = () => {
+    if (!hasSearchDates) {
+      return "Includes nightly rate, taxes, and service fees";
+    }
+
+    return `${nights} ${
+      nights === 1 ? "night" : "nights"
+    } @ $${nightlyPrice.toLocaleString()} per night`;
+  };
+
+  const getBookingStatusColor = (status) => {
+    if (status === "accepted") {
+      return "green";
+    }
+    if (status === "pending") {
+      return "orange";
+    }
+    return "red";
+  };
+
   return (
     <Layout className="host-layout listing-view">
       <Header className="host-header listing-view__header">
@@ -188,9 +249,7 @@ const ListingView = () => {
           <LogoutBtn />
         </Flex>
       </Header>
-      <Content className="host-content">
-      test
-      </Content>
+      <Content className="host-content">test</Content>
     </Layout>
   );
 };
