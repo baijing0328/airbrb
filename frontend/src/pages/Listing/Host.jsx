@@ -6,6 +6,7 @@ import LogoutBtn from "../../components/LogoutBtn";
 import HostItem from "../../components/HostListing/HostItem";
 import CreateHostForm from "../../components/HostListing/CreateHostForm";
 import { getListings, getListing } from "../../services/listingManageService";
+import { useAppSelector } from "../../store/hooks";
 import "./Host.scss";
 
 const { Header, Content } = Layout;
@@ -16,10 +17,18 @@ const Host = () => {
   const handleToggle = () => {
     navigate("/all");
   };
+  const authState = useAppSelector((state) => state.auth);
+  const userEmail = authState?.user?.email || "";
+
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchListings = useCallback(async () => {
+    if (!userEmail) {
+      setListings([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const response = await getListings();
@@ -35,14 +44,18 @@ const Host = () => {
         })
       );
 
-      setListings(listingsWithDetails);
+      const ownedListings = listingsWithDetails.filter(
+        (listing) => listing.details?.owner === userEmail
+      );
+
+      setListings(ownedListings);
     } catch (error) {
       console.error("Error fetching listings:", error);
       message.error("Error fetching listings");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userEmail]);
 
   useEffect(() => {
     fetchListings();

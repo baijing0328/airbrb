@@ -1,3 +1,5 @@
+@use "sass:color";
+
 $tiffany-blue: #81d8d0;
 $mars-green: #2d5f5d;
 $light-tiffany: #b3e5e0;
@@ -118,7 +120,7 @@ $dark-mars: #1a3635;
 
   &:hover,
   &:focus {
-    background: darken($mars-green, 5%);
+    background: color.adjust($mars-green, $lightness: -5%);
   }
 
   .anticon {

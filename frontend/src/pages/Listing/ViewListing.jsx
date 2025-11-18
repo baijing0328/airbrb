@@ -14,6 +14,8 @@ import {
   Divider,
   Empty,
   DatePicker,
+  Input,
+  Select,
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -24,7 +26,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import dayjs from "dayjs";
-import { getListing } from "../../services/listingManageService";
+import { getListing, postListingReview } from "../../services/listingManageService";
 import { getBookings, newBooking } from "../../services/bookingService";
 import { useAppSelector } from "../../store/hooks";
 import { theme } from "../../utils/utils";
@@ -48,6 +50,10 @@ const ListingView = () => {
   const [bookingsLoading, setBookingsLoading] = useState(false);
   const [bookingRange, setBookingRange] = useState([null, null]);
   const [bookingSubmitting, setBookingSubmitting] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const { user, token, isAuthenticated } = useAppSelector(
     (state) => state.auth
   );
@@ -83,6 +89,10 @@ const ListingView = () => {
           String(booking.listingId) === String(listingId)
       );
       setBookingStatuses(relevant);
+      const accepted = relevant.filter((booking) => booking.status === "accepted");
+      if (accepted.length > 0 && !selectedBookingId) {
+        setSelectedBookingId(String(accepted[0].id));
+      }
     } catch (error) {
       console.error("Error fetching bookings:", error);
       message.error("Unable to load your booking status");
@@ -225,6 +235,11 @@ const ListingView = () => {
     return "Select dates to see total";
   }, [bookingSelection.nights]);
 
+  const acceptedBookings = useMemo(
+    () => bookingStatuses.filter((booking) => booking.status === "accepted"),
+    [bookingStatuses]
+  );
+
   const isDateWithinAvailability = (date) =>
     availabilityRanges.some(
       (range) =>
@@ -321,11 +336,43 @@ const ListingView = () => {
       message.success("Booking request submitted!");
       setBookingRange([null, null]);
       fetchUserBookings();
+      fetchListingDetails();
     } catch (error) {
       console.error("Booking failed:", error);
       message.error("Unable to create booking. Please try again.");
     } finally {
       setBookingSubmitting(false);
+    }
+  };
+
+  const handleReviewSubmit = async () => {
+    if (!isLoggedIn) {
+      message.warning("Please log in to leave a review.");
+      return;
+    }
+    if (!selectedBookingId) {
+      message.warning("Select a booking to attach your review.");
+      return;
+    }
+    if (reviewRating <= 0) {
+      message.warning("Please provide a rating.");
+      return;
+    }
+    try {
+      setReviewSubmitting(true);
+      await postListingReview(listingId, selectedBookingId, {
+        rating: reviewRating,
+        comment: reviewComment,
+      });
+      message.success("Review posted!");
+      setReviewRating(0);
+      setReviewComment("");
+      fetchListingDetails();
+    } catch (error) {
+      console.error("Error posting review:", error);
+      message.error("Failed to submit review.");
+    } finally {
+      setReviewSubmitting(false);
     }
   };
 
@@ -521,6 +568,60 @@ const ListingView = () => {
                   </Text>
                 )}
               </Card>
+              {isLoggedIn && (
+                <Card
+                  className="listing-view__card listing-view__card--glass listing-view__review-form"
+                  title="Leave a review"
+                >
+                  {acceptedBookings.length === 0 ? (
+                    <Text type="secondary">
+                      You need at least one accepted booking before leaving a review.
+                    </Text>
+                  ) : (
+                    <Flex vertical gap="large">
+                      <div>
+                        <Text strong>Select booking</Text>
+                        <Select
+                          value={selectedBookingId}
+                          onChange={(value) => setSelectedBookingId(value)}
+                          style={{ marginTop: 8, width: "100%" }}
+                          options={acceptedBookings.map((booking) => ({
+                            value: String(booking.id),
+                            label: `Booking #${booking.id} · ${renderBookingDateRange(booking)}`,
+                          }))}
+                        />
+                      </div>
+                      <div>
+                        <Text strong>Rating</Text>
+                        <Rate
+                          value={reviewRating}
+                          onChange={(value) => setReviewRating(value)}
+                          style={{ display: "block", marginTop: 8 }}
+                        />
+                      </div>
+                      <div>
+                        <Text strong>Comment</Text>
+                        <Input.TextArea
+                          rows={4}
+                          placeholder="Share your experience..."
+                          value={reviewComment}
+                          onChange={(e) => setReviewComment(e.target.value)}
+                          style={{ marginTop: 8 }}
+                        />
+                      </div>
+                      <Button
+                        type="primary"
+                        size="large"
+                        disabled={reviewRating <= 0}
+                        loading={reviewSubmitting}
+                        onClick={handleReviewSubmit}
+                      >
+                        Submit review
+                      </Button>
+                    </Flex>
+                  )}
+                </Card>
+              )}
               <Flex gap="large" wrap="wrap">
                 <Card
                   className="listing-view__card listing-view__card--glass"
