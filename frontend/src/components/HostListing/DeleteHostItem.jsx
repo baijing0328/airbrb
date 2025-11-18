@@ -5,11 +5,11 @@ import { deleteListing } from "../../services/listingManageService";
 const DeleteHostItem = ({ listingId, onSuccess }) => {
   const handleDelete = () => {
     Modal.confirm({
-      title: 'Are you sure you want to delete this listing?',
-      content: 'This action cannot be undone.',
-      okText: 'Yes, delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
+      title: "Are you sure you want to delete this listing?",
+      content: "This action cannot be undone.",
+      okText: "Yes, delete",
+      okType: "danger",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
           await deleteListing(listingId);

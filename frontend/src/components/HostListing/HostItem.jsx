@@ -35,8 +35,14 @@ const HostItem = ({
   showActions = true,
   publishDate,
 }) => {
-  const { title, price, thumbnail, reviews, metadata, availability = [] } =
-    listing;
+  const {
+    title,
+    price,
+    thumbnail,
+    reviews,
+    metadata,
+    availability = [],
+  } = listing;
   const formattedPublishDate = publishDate
     ? dayjs(publishDate).format("MMM D, YYYY")
     : null;
@@ -242,7 +248,10 @@ const HostItem = ({
               />
             </div>
             <div style={{ flex: 1 }}>
-              <DeleteHostItem listingId={listingId} onSuccess={onDeleteSuccess} />
+              <DeleteHostItem
+                listingId={listingId}
+                onSuccess={onDeleteSuccess}
+              />
             </div>
           </div>
         )}

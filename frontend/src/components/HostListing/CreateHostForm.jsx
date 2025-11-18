@@ -44,10 +44,7 @@ const CreateHostForm = ({ onSuccess }) => {
           },
         }}
       >
-        <HostListingForm
-          mode="create"
-          onSuccess={handleSuccess}
-        />
+        <HostListingForm mode="create" onSuccess={handleSuccess} />
       </Modal>
     </>
   );

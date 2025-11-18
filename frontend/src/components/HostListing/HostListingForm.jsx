@@ -23,7 +23,11 @@ import {
   getListing,
   updateListing,
 } from "../../services/listingManageService";
-import { HostListngFormRules, HostListingPromptData, theme } from "../../utils/utils";
+import {
+  HostListngFormRules,
+  HostListingPromptData,
+  theme,
+} from "../../utils/utils";
 
 const HostListingForm = ({ mode, onSuccess, listingId }) => {
   const [form] = Form.useForm();

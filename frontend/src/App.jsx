@@ -2,11 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Host from "./pages/Listing/Host";
-import All from"./pages/Listing/All";
+import All from "./pages/Listing/All";
 import EditHostListing from "./pages/Listing/EditHostListing";
 
 function App() {
-
   return (
     <BrowserRouter>
       <Routes>
@@ -15,7 +14,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/host" element={<Host />} />
         <Route path="/host/edit/:listingId" element={<EditHostListing />} />
-        <Route path="/all" element={<All/>} />
+        <Route path="/all" element={<All />} />
       </Routes>
     </BrowserRouter>
   );
