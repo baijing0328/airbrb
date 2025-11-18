@@ -135,8 +135,103 @@ const SearchBar = ({ onSearch, onClear }) => {
           </Flex>
         </Flex>
       </Card>
+      <Modal
+        title="More Filters"
+        className="search-filter-modal"
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={[
+          <Button key="clear" onClick={handleClearModalFilters}>
+            Clear Filters
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleApplyFilters}>
+            Apply Filters
+          </Button>,
+        ]}
+        centered
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          className="search-filter-modal__form"
+        >
+          <div className="search-filter-modal__section">
+            <Title level={5}>Bedrooms</Title>
+            <p>Filter by the number of bedrooms.</p>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item name="minBeds">
+                  <InputNumber
+                    placeholder="Min"
+                    value={bedroomRange[0]}
+                    min={0}
+                    onChange={(value) =>
+                      setBedroomRange([value, bedroomRange[1]])
+                    }
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="maxBeds">
+                  <InputNumber
+                    placeholder="Max"
+                    value={bedroomRange[1]}
+                    min={bedroomRange[0] || 0}
+                    onChange={(value) =>
+                      setBedroomRange([bedroomRange[0], value])
+                    }
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </div>
 
-     
+          <div className="search-filter-modal__section">
+            <Title level={5}>Price</Title>
+            <p>Filter by the price per night.</p>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item name="minPrice">
+                  <InputNumber
+                    placeholder="Min"
+                    value={priceRange[0]}
+                    min={0}
+                    onChange={(value) => setPriceRange([value, priceRange[1]])}
+                    addonBefore="$"
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="maxPrice">
+                  <InputNumber
+                    placeholder="Max"
+                    value={priceRange[1]}
+                    min={priceRange[0] || 0}
+                    onChange={(value) => setPriceRange([priceRange[0], value])}
+                    addonBefore="$"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </div>
+
+          <div className="search-filter-modal__section">
+            <Title level={5}>Sort By</Title>
+            <p>Sort the results based on your preference.</p>
+            <Form.Item>
+              <Select value={sortBy} onChange={(value) => setSortBy(value)}>
+                <Option value="alpha_asc">Alphabetical (A-Z)</Option>
+                <Option value="beds_asc">Bedrooms (Low to High)</Option>
+                <Option value="beds_desc">Bedrooms (High to Low)</Option>
+                <Option value="price_asc">Price (Low to High)</Option>
+                <Option value="price_desc">Price (High to Low)</Option>
+                <Option value="rating_asc">Rating (Low to High)</Option>
+                <Option value="rating_desc">Rating (High to Low)</Option>
+              </Select>
+            </Form.Item>
+          </div>
+        </Form>
+      </Modal>
     </>
   );
 };
