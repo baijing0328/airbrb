@@ -17,6 +17,7 @@ import SearchBar from "../../components/AllListing/SearchBar";
 import { getListings, getListing } from "../../services/listingManageService";
 import { getBookings } from "../../services/bookingService";
 import { useAppSelector } from "../../store/hooks";
+import { SORT_LABELS } from "../../utils/utils";
 import "./Host.scss";
 import dayjs from "dayjs";
 
@@ -136,17 +137,8 @@ const All = () => {
     }
 
     if (sortBy) {
-      const sortLabels = {
-        alpha_asc: "Alphabetical A→Z",
-        beds_asc: "Beds ↑",
-        beds_desc: "Beds ↓",
-        price_asc: "Price ↑",
-        price_desc: "Price ↓",
-        rating_asc: "Rating ↑",
-        rating_desc: "Rating ↓",
-      };
-      if (sortLabels[sortBy]) {
-        summary.push(`Sort: ${sortLabels[sortBy]}`);
+      if (SORT_LABELS[sortBy]) {
+        summary.push(`Sort: ${SORT_LABELS[sortBy]}`);
       }
     }
 

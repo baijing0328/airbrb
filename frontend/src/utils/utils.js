@@ -105,3 +105,13 @@ export const mergeDateRanges = (ranges) => {
 
   return merged;
 };
+
+export const SORT_LABELS = {
+  alpha_asc: "Alphabetical A→Z",
+  beds_asc: "Beds ↑",
+  beds_desc: "Beds ↓",
+  price_asc: "Price ↑",
+  price_desc: "Price ↓",
+  rating_asc: "Rating ↑",
+  rating_desc: "Rating ↓",
+};
