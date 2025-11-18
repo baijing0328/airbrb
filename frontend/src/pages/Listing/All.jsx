@@ -1,5 +1,14 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Layout, Typography, Button, message, Spin, Flex, Empty, Tag } from "antd";
+import {
+  Layout,
+  Typography,
+  Button,
+  message,
+  Spin,
+  Flex,
+  Empty,
+  Tag,
+} from "antd";
 import { HomeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import LogoutBtn from "../../components/LogoutBtn";
@@ -120,7 +129,9 @@ const All = () => {
 
     if (startDate && endDate) {
       summary.push(
-        `Dates: ${dayjs(startDate).format("MMM D")} - ${dayjs(endDate).format("MMM D")}`
+        `Dates: ${dayjs(startDate).format("MMM D")} - ${dayjs(endDate).format(
+          "MMM D"
+        )}`
       );
     }
 
@@ -220,19 +231,29 @@ const All = () => {
         const aDetails = a.details;
         const bDetails = b.details;
         switch (sortBy) {
-        case 'beds_asc':
-          return (aDetails?.metadata?.bedrooms || 0) - (bDetails?.metadata?.bedrooms || 0);
-        case 'beds_desc':
-          return (bDetails?.metadata?.bedrooms || 0) - (aDetails?.metadata?.bedrooms || 0);
-        case 'price_asc':
+        case "beds_asc":
+          return (
+            (aDetails?.metadata?.bedrooms || 0) -
+            (bDetails?.metadata?.bedrooms || 0)
+          );
+        case "beds_desc":
+          return (
+            (bDetails?.metadata?.bedrooms || 0) -
+            (aDetails?.metadata?.bedrooms || 0)
+          );
+        case "price_asc":
           return (aDetails?.price || 0) - (bDetails?.price || 0);
-        case 'price_desc':
+        case "price_desc":
           return (bDetails?.price || 0) - (aDetails?.price || 0);
-        case 'rating_asc':
-          return getAvgRating(aDetails?.reviews) - getAvgRating(bDetails?.reviews);
-        case 'rating_desc':
-          return getAvgRating(bDetails?.reviews) - getAvgRating(aDetails?.reviews);
-        case 'alpha_asc':
+        case "rating_asc":
+          return (
+            getAvgRating(aDetails?.reviews) - getAvgRating(bDetails?.reviews)
+          );
+        case "rating_desc":
+          return (
+            getAvgRating(bDetails?.reviews) - getAvgRating(aDetails?.reviews)
+          );
+        case "alpha_asc":
         default:
           return (aDetails?.title || "").localeCompare(bDetails?.title || "");
         }
