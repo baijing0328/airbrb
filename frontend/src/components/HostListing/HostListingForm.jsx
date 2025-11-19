@@ -351,49 +351,133 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
       </Form.Item>
 
       {thumbnailType === "image" ? (
-        <Form.Item label="Thumbnail Image">
+        <Form.Item label="Property Images">
           <Upload.Dragger
+            multiple
             name="files"
-            maxCount={1}
+            fileList={[]}
             beforeUpload={async (file) => {
               try {
                 const dataUrl = await fileToDataUrl(file);
-                form.setFieldsValue({
-                  thumbnail: dataUrl,
-                  youtubeUrl: null,
-                });
-                setImagePreview(dataUrl);
+                // If we don't have a main thumbnail yet (and one isn't set in form), set it
+                const currentThumbnail = form.getFieldValue("thumbnail");
+                if (!currentThumbnail && !imagePreview) {
+                  form.setFieldsValue({
+                    thumbnail: dataUrl,
+                    youtubeUrl: null,
+                  });
+                  setImagePreview(dataUrl);
+                } else {
+                  // Otherwise add to property images
+                  setPropertyImages((prev) => [...prev, dataUrl]);
+                }
               } catch (error) {
                 console.error(error);
-                setImagePreview(null);
+                message.error("Failed to upload image");
               }
               return false;
             }}
             onRemove={() => {
-              form.setFieldsValue({ thumbnail: null });
-              setImagePreview(null);
+               // This onRemove is on the Dragger itself which we aren't using for display list
+               // We handle removal in the custom list below
             }}
           >
-            {imagePreview ? (
-              <img
-                src={imagePreview}
-                alt="preview"
-                style={{ maxHeight: "150px" }}
-              />
-            ) : (
-              <>
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
-                </p>
-                <p className="ant-upload-text">
-                  Click or drag file to this area to upload
-                </p>
-                <p className="ant-upload-hint">
-                  Support for image uploads (PNG, JPG, JPEG)
-                </p>
-              </>
-            )}
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">
+              Click or drag file to this area to upload
+            </p>
+            <p className="ant-upload-hint">
+              Support for image uploads (PNG, JPG, JPEG). First image will be the main thumbnail.
+            </p>
           </Upload.Dragger>
+
+          {/* Display Main Thumbnail */}
+          {imagePreview && (
+            <div style={{ marginTop: 16 }}>
+              <p style={{ marginBottom: 8, fontWeight: 'bold' }}>Main Thumbnail:</p>
+              <div style={{ position: "relative", width: 150, height: 150 }}>
+                <img
+                  src={imagePreview}
+                  alt="Main Thumbnail"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: 8,
+                    border: "1px solid #d9d9d9",
+                  }}
+                />
+                <Button
+                  type="primary"
+                  danger
+                  shape="circle"
+                  icon={<MinusCircleOutlined />}
+                  size="small"
+                  style={{ position: "absolute", top: -8, right: -8 }}
+                  onClick={() => {
+                    form.setFieldsValue({ thumbnail: null });
+                    setImagePreview(null);
+                    // Optionally promote the first property image to thumbnail?
+                    if (propertyImages.length > 0) {
+                       const newThumbnail = propertyImages[0];
+                       const newPropertyImages = propertyImages.slice(1);
+                       form.setFieldsValue({ thumbnail: newThumbnail });
+                       setImagePreview(newThumbnail);
+                       setPropertyImages(newPropertyImages);
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Display Additional Property Images */}
+          {propertyImages.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+               <p style={{ marginBottom: 8, fontWeight: 'bold' }}>Additional Images:</p>
+               <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  flexWrap: "wrap",
+                }}
+              >
+                {propertyImages.map((img, index) => (
+                  <div
+                    key={index}
+                    style={{ position: "relative", width: 100, height: 100 }}
+                  >
+                    <img
+                      src={img}
+                      alt={`Property ${index}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: 8,
+                        border: "1px solid #d9d9d9",
+                      }}
+                    />
+                    <Button
+                      type="primary"
+                      danger
+                      shape="circle"
+                      icon={<MinusCircleOutlined />}
+                      size="small"
+                      style={{ position: "absolute", top: -8, right: -8 }}
+                      onClick={() => {
+                        const newImages = [...propertyImages];
+                        newImages.splice(index, 1);
+                        setPropertyImages(newImages);
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </Form.Item>
       ) : (
         <Form.Item

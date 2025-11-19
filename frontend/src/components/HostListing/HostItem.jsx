@@ -1,4 +1,4 @@
-import { Card, Tag, Flex, Rate, Typography, Button } from "antd";
+import { Card, Tag, Flex, Rate, Typography, Button, Carousel } from "antd";
 import {
   DollarOutlined,
   StarOutlined,
@@ -64,6 +64,8 @@ const HostItem = ({
 
   // Check if thumbnail is a YouTube embed URL
   const isYouTubeVideo = thumbnail && thumbnail.includes("youtube.com/embed/");
+  const slides = [thumbnail, ...(metadata?.property_images || [])].filter(Boolean);
+  const isYouTubeEmbed = (url) => url && url.includes("youtube.com/embed/");
 
   return (
     <Card
@@ -90,7 +92,45 @@ const HostItem = ({
             position: "relative",
           }}
         >
-          {isYouTubeVideo ? (
+          {slides.length > 1 ? (
+            <Carousel autoplay effect="scrollx" dots={{ className: "custom-dots" }}>
+              {slides.map((slide, index) => (
+                <div key={index}>
+                  <div
+                    style={{
+                      height: "200px",
+                      width: "100%",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {isYouTubeEmbed(slide) ? (
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        src={slide}
+                        title={`${title}-${index}`}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        style={{ border: "none" }}
+                      />
+                    ) : (
+                      <img
+                        alt={`${title}-${index}`}
+                        src={slide}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </Carousel>
+          ) : isYouTubeVideo ? (
             <iframe
               width="100%"
               height="100%"
