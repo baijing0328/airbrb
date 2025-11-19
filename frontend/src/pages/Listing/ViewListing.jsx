@@ -17,6 +17,8 @@ import {
   Tooltip,
   Modal,
   Progress,
+  Select,
+  Input,
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -24,13 +26,12 @@ import {
   DollarOutlined,
   StarFilled,
   CalendarOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import dayjs from "dayjs";
 import {
   getListing,
-  postListingReview,
+  putListingReview,
 } from "../../services/listingManageService";
 import { getBookings, newBooking } from "../../services/bookingService";
 import { useAppSelector } from "../../store/hooks";
@@ -112,30 +113,33 @@ const ListingView = () => {
     );
 
     return (
-      <div style={{ width: 300 }}>
-        <Title level={5} style={{ color: "white", marginBottom: 12 }}>
+      <div className="rating-breakdown-container">
+        <Title level={5} style={{ color: theme.darkMars, marginBottom: 12 }}>
           Rating Breakdown
         </Title>
         {sortedDistribution.map(({ stars, count, percent }) => (
           <Flex
             key={stars}
             align="center"
-            gap={8}
-            style={{ marginBottom: 8, cursor: "pointer" }}
+            gap={6}
+            className="rating-breakdown-row"
+            style={{ marginBottom: 4, cursor: "pointer", width: "100%" }}
             onClick={() => {
               setSelectedRatingFilter(stars);
               setRatingModalOpen(true);
             }}
           >
-            <Text style={{ color: "white", minWidth: 60 }}>{stars} stars</Text>
+            <Text className="rating-label">
+              {stars} stars
+            </Text>
             <Progress
               percent={percent}
               showInfo={false}
               strokeColor={theme.sunblownYellow}
-              trailColor="rgba(255,255,255,0.2)"
-              style={{ margin: 0, flex: 1 }}
+              trailColor={`${theme.lightTiffany}80`}
+              className="rating-progress"
             />
-            <Text style={{ color: "white", minWidth: 40, textAlign: "right" }}>
+            <Text className="rating-count">
               {count} ({Math.round(percent)}%)
             </Text>
           </Flex>
@@ -449,7 +453,7 @@ const ListingView = () => {
     }
     try {
       setReviewSubmitting(true);
-      await postListingReview(listingId, selectedBookingId, {
+      await putListingReview(listingId, selectedBookingId, {
         rating: reviewRating,
         comment: reviewComment,
       });
@@ -498,12 +502,17 @@ const ListingView = () => {
           onCancel={() => setRatingModalOpen(false)}
           footer={null}
           width={600}
+          className="listing-view__modal"
+          wrapClassName="listing-view__modal-wrap"
         >
           <List
             itemLayout="vertical"
             dataSource={filteredReviews}
             renderItem={(review, index) => (
-              <List.Item key={review.id || index}>
+              <List.Item
+                key={review.id || index}
+                className="review-modal__item"
+              >
                 <Flex justify="space-between" align="center">
                   <Text strong>{review.reviewer || "Guest"}</Text>
                   <Flex align="center" gap={4}>
@@ -532,7 +541,7 @@ const ListingView = () => {
             <Empty description="Listing not found." />
           ) : (
             <div className="listing-view__content">
-              <Card className="listing-view__summary" bordered={false}>
+              <Card className="listing-view__summary" variant="borderless">
                 <Flex justify="space-between" align="flex-start" wrap="wrap">
                   <div>
                     <Tag color="cyan" style={{ marginBottom: 12 }}>
@@ -552,8 +561,7 @@ const ListingView = () => {
                     <Tooltip
                       title={renderRatingTooltip()}
                       placement="bottomLeft"
-                      color={theme.darkMars}
-                      overlayInnerStyle={{ padding: 16 }}
+                      overlayClassName="listing-view__tooltip"
                     >
                       <Flex
                         align="center"
@@ -640,7 +648,7 @@ const ListingView = () => {
               </Card>
 
               {mediaItems.length > 0 && (
-                <Card className="listing-view__media" bordered={false}>
+                <Card className="listing-view__media" variant="borderless">
                   <div className="listing-view__media-grid">
                     {mediaItems.map((media, index) => (
                       <div
@@ -675,6 +683,7 @@ const ListingView = () => {
               <Card
                 className="listing-view__card listing-view__card--glass listing-view__booking-form"
                 title="Book this stay"
+                variant="borderless"
               >
                 {isLoggedIn ? (
                   <Flex vertical gap="large">
@@ -721,6 +730,7 @@ const ListingView = () => {
                 <Card
                   className="listing-view__card listing-view__card--glass listing-view__review-form"
                   title="Leave a review"
+                  variant="borderless"
                 >
                   {acceptedBookings.length === 0 ? (
                     <Text type="secondary">
@@ -778,6 +788,7 @@ const ListingView = () => {
                 <Card
                   className="listing-view__card listing-view__card--glass"
                   title="Quick facts"
+                  variant="borderless"
                 >
                   <Flex gap={24} wrap="wrap">
                     <div className="listing-view__stat">
@@ -810,6 +821,7 @@ const ListingView = () => {
                 <Card
                   className="listing-view__card listing-view__card--glass"
                   title="Amenities"
+                  variant="borderless"
                 >
                   {amenities.length ? (
                     <Flex gap="small" wrap="wrap">
@@ -832,6 +844,7 @@ const ListingView = () => {
               <Card
                 className="listing-view__card listing-view__card--glass"
                 title="Description"
+                variant="borderless"
               >
                 <Paragraph>
                   {listing.description ||
@@ -842,6 +855,7 @@ const ListingView = () => {
               <Card
                 className="listing-view__card listing-view__card--glass listing-view__reviews"
                 title="Reviews"
+                variant="borderless"
               >
                 {reviews.length === 0 ? (
                   <Text type="secondary">No reviews yet.</Text>
@@ -883,6 +897,7 @@ const ListingView = () => {
                 <Card
                   className="listing-view__card listing-view__card--glass listing-view__bookings"
                   title="Your bookings for this listing"
+                  variant="borderless"
                   extra={
                     <Flex align="center" gap={6}>
                       <CalendarOutlined />

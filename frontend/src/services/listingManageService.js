@@ -32,8 +32,8 @@ export async function unpublishListing(listingid) {
   return await request.put(`/listings/unpublish/${listingid}`);
 }
 
-export async function postListingReview(listingid, bookingid, review) {
-  return await request.post(`/listings/${listingid}/review/${bookingid}`, {
+export async function putListingReview(listingid, bookingid, review) {
+  return await request.put(`/listings/${listingid}/review/${bookingid}`, {
     review,
   });
 }
