@@ -1,10 +1,11 @@
-import { Card, Tag, Flex, Rate, Typography } from "antd";
+import { Card, Tag, Flex, Rate, Typography, Button } from "antd";
 import {
   DollarOutlined,
   StarOutlined,
   HomeOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
+import { TeamOutlined } from "@ant-design/icons";
 import EditHostItem from "./EditHostItem";
 import DeleteHostItem from "./DeleteHostItem";
 import PublishHostItem from "./PublishHostItem";
@@ -35,6 +36,7 @@ const HostItem = ({
   showActions = true,
   publishDate,
   onCardClick,
+  onManageBookings,
 }) => {
   const {
     title,
@@ -129,7 +131,23 @@ const HostItem = ({
             >
               {title}
             </Typography.Title>
-            {renderPropertyType(metadata)}
+            <Flex align="center" gap={8}>
+              {renderPropertyType(metadata)}
+              {showActions && onManageBookings && (
+                <Button
+                  size="small"
+                  type="primary"
+                  ghost
+                  icon={<TeamOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onManageBookings();
+                  }}
+                >
+                  Requests
+                </Button>
+              )}
+            </Flex>
           </Flex>
         }
         description={

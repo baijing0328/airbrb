@@ -5,6 +5,7 @@ import Host from "./pages/Listing/Host";
 import All from "./pages/Listing/All";
 import EditHostListing from "./pages/Listing/EditHostListing";
 import ListingView from "./pages/Listing/ViewListing";
+import HostRequests from "./pages/Listing/HostRequests";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/host" element={<Host />} />
         <Route path="/host/edit/:listingId" element={<EditHostListing />} />
+        <Route path="/host/requests/:listingId" element={<HostRequests />} />
         <Route path="/all" element={<All />} />
         <Route path="/listing/:listingId" element={<ListingView />} />
       </Routes>

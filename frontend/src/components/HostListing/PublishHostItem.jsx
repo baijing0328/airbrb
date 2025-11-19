@@ -14,6 +14,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   DownOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import {
   publishListing,
@@ -133,17 +134,32 @@ const PublishHostItem = ({ listingId, isPublished, onSuccess }) => {
     }
   };
 
-  const handleUnpublish = async () => {
-    try {
-      await unpublishListing(listingId);
-      message.success("Listing unpublished successfully!");
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (error) {
-      console.error("Error unpublishing listing:", error);
-      message.error("Failed to unpublish listing");
-    }
+  const handleUnpublish = () => {
+    Modal.confirm({
+      title: "Remove this listing from guests?",
+      icon: (
+        <ExclamationCircleOutlined style={{ color: theme.sunblownYellow }} />
+      ),
+      content:
+        "Unpublishing immediately hides the listing from all travellers, clears its availability calendar, and prevents guests with previous bookings from seeing it on their landing page.",
+      okText: "Unpublish",
+      cancelText: "Keep live",
+      okButtonProps: { danger: true },
+      onOk: () =>
+        unpublishListing(listingId)
+          .then(() => {
+            setCurrentAvailability([]);
+            message.success("Listing unpublished successfully!");
+            if (onSuccess) {
+              onSuccess();
+            }
+          })
+          .catch((error) => {
+            console.error("Error unpublishing listing:", error);
+            message.error("Failed to unpublish listing");
+            return Promise.reject(error);
+          }),
+    });
   };
 
   const handleOpenModal = (mode) => {

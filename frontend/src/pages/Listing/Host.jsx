@@ -99,6 +99,9 @@ const Host = () => {
                     onPublishSuccess={fetchListings}
                     isPublished={listing.details.published || false}
                     publishDate={listing.details.postedOn}
+                    onManageBookings={() =>
+                      navigate(`/host/requests/${listing.id}`)
+                    }
                   />
                 );
               })}
