@@ -149,8 +149,65 @@ const HostRequests = () => {
   const currentYear = dayjs().year();
   const yearStart = dayjs().startOf("year");
   const yearEnd = dayjs().endOf("year");
+  const stats = useMemo(() => {
+    let totalDays = 0;
+    let totalProfit = 0;
 
+    acceptedBookings.forEach((booking) => {
+      const { start, end } = getBookingRange(booking);
+      if (!start || !end) return;
 
+      const effectiveStart = start.isBefore(yearStart) ? yearStart : start;
+      const effectiveEnd = end.isAfter(yearEnd) ? yearEnd : end;
+
+      if (effectiveEnd.isAfter(effectiveStart)) {
+        const nights = effectiveEnd.diff(effectiveStart, "day");
+        totalDays += nights;
+        totalProfit += booking.totalPrice || 0;
+      }
+    });
+
+    return {
+      totalDaysBooked: totalDays,
+      totalProfit,
+    };
+  }, [acceptedBookings, yearStart, yearEnd]);
+
+  const renderBookingMeta = (booking) => {
+    const { start, end } = getBookingRange(booking);
+    const nights =
+      start && end ? Math.max(end.diff(start, "day"), 1) : undefined;
+    return (
+      <Space direction="vertical" size={4}>
+        <Text>
+          <CalendarOutlined style={{ color: theme.tiffanyBlue }} />{" "}
+          {start ? start.format("MMM D, YYYY") : "?"} -{" "}
+          {end ? end.format("MMM D, YYYY") : "?"}
+        </Text>
+        <Text type="secondary">
+          <ClockCircleOutlined /> {nights || "-"} night
+          {nights === 1 ? "" : "s"}
+        </Text>
+        {booking.totalPrice !== undefined && (
+          <Text strong style={{ color: theme.marsGreen }}>
+            <DollarOutlined /> ${booking.totalPrice}
+          </Text>
+        )}
+      </Space>
+    );
+  };
+
+  const renderStatusTag = (status) => {
+    if (status === "accepted") {
+      return <Tag color="green">Accepted</Tag>;
+    }
+    if (status === "pending") {
+      return <Tag color="orange">Pending</Tag>;
+    }
+    return <Tag color="red">Declined</Tag>;
+  };
+
+  const loading = loadingListing || loadingBookings;
 
   return (
     <Layout className="host-layout">
@@ -171,11 +228,143 @@ const HostRequests = () => {
         </div>
       </Header>
       <Content className="host-content">
-        
+        <div className="host-content__wrapper">
+          {loading ? (
+            <div style={{ textAlign: "center", padding: 40 }}>
+              <Spin size="large" />
+            </div>
+          ) : !listing ? (
+            <Empty description="Listing not found" />
+          ) : (
+            <Space direction="vertical" size="large" style={{ width: "100%" }}>
+              <Card>
+                <Flex align="center" justify="space-between" wrap="wrap">
+                  <div>
+                    <Title level={3} style={{ marginBottom: 4 }}>
+                      {listing.title}
+                    </Title>
+                    <Text type="secondary">
+                      Listing ID: {listingId} · Owner: {listing.owner}
+                    </Text>
+                  </div>
+                  <Space size="large">
+                    <Statistic
+                      title="Pending requests"
+                      value={pendingBookings.length}
+                    />
+                    <Statistic
+                      title={`Booked days (${currentYear})`}
+                      value={stats.totalDaysBooked}
+                    />
+                    <Statistic
+                      title={`Profit (${currentYear})`}
+                      prefix="$"
+                      value={Number(stats.totalProfit.toFixed(2))}
+                    />
+                    <Statistic
+                      title="Online duration"
+                      value={
+                        listingOnlineDays !== null
+                          ? `${listingOnlineDays} days`
+                          : "Not published"
+                      }
+                    />
+                  </Space>
+                </Flex>
+              </Card>
+
+              <Card
+                title="Pending Booking Requests"
+                extra={
+                  <Tag color="orange">{pendingBookings.length} pending</Tag>
+                }
+              >
+                {pendingBookings.length === 0 ? (
+                  <Empty description="No pending requests" />
+                ) : (
+                  <List
+                    itemLayout="vertical"
+                    dataSource={pendingBookings}
+                    renderItem={(booking) => (
+                      <List.Item
+                        key={booking.id}
+                        actions={[
+                          <Button
+                            key="accept"
+                            type="primary"
+                            icon={<CheckOutlined />}
+                            onClick={() =>
+                              handleBookingAction(booking.id, "accept")
+                            }
+                            loading={actionLoading[booking.id]}
+                          >
+                            Accept
+                          </Button>,
+                          <Button
+                            key="decline"
+                            danger
+                            icon={<CloseOutlined />}
+                            onClick={() =>
+                              handleBookingAction(booking.id, "decline")
+                            }
+                            loading={actionLoading[booking.id]}
+                          >
+                            Decline
+                          </Button>,
+                        ]}
+                      >
+                        <List.Item.Meta
+                          title={
+                            <Space align="center">
+                              <Text strong>{booking.owner}</Text>
+                              {renderStatusTag(booking.status)}
+                            </Space>
+                          }
+                          description={renderBookingMeta(booking)}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                )}
+              </Card>
+
+              <Card
+                title="Booking History"
+                extra={<Tag>{bookingHistory.length} total</Tag>}
+              >
+                {bookingHistory.length === 0 ? (
+                  <Empty description="No booking history" />
+                ) : (
+                  <List
+                    itemLayout="horizontal"
+                    dataSource={bookingHistory}
+                    renderItem={(booking) => (
+                      <List.Item key={booking.id}>
+                        <List.Item.Meta
+                          title={
+                            <Space align="center">
+                              <Text strong>Booking #{booking.id}</Text>
+                              {renderStatusTag(booking.status)}
+                            </Space>
+                          }
+                          description={
+                            <Space direction="vertical">
+                              <Text>Guest: {booking.owner}</Text>
+                              {renderBookingMeta(booking)}
+                            </Space>
+                          }
+                        />
+                      </List.Item>
+                    )}
+                  />
+                )}
+              </Card>
+            </Space>
+          )}
+        </div>
       </Content>
     </Layout>
   );
 };
 
 export default HostRequests;
-
