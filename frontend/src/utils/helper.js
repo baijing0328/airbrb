@@ -36,7 +36,12 @@ async function imageUrlToDataUrl(url) {
 }
 
 const countBeds = (bedrooms) => {
-  return bedrooms.reduce((acc, curr) => acc + curr.single + curr.double, 0);
+  if (!Array.isArray(bedrooms)) return 0;
+  return bedrooms.reduce((acc, curr) => {
+    const single = Number(curr?.single) || 0;
+    const double = Number(curr?.double) || 0;
+    return acc + single + double;
+  }, 0);
 };
 
 // Extract YouTube video ID from various YouTube URL formats

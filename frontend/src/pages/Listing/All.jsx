@@ -158,8 +158,25 @@ const All = () => {
         const searchText = searchCriteria.searchText.toLowerCase();
         filteredListings = filteredListings.filter((l) => {
           const title = l.details?.title?.toLowerCase() || "";
-          const city = l.details?.address?.city?.toLowerCase() || "";
-          return title.includes(searchText) || city.includes(searchText);
+          
+          let addressStr = "";
+          const address = l.details?.address;
+          
+          if (typeof address === 'string') {
+            addressStr = address.toLowerCase();
+          } else if (typeof address === 'object' && address !== null) {
+            // Handle case where address might be an object
+            const parts = [
+              address.street, 
+              address.city, 
+              address.state, 
+              address.postcode, 
+              address.country
+            ].filter(Boolean);
+            addressStr = parts.join(" ").toLowerCase();
+          }
+
+          return title.includes(searchText) || addressStr.includes(searchText);
         });
       }
 

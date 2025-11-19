@@ -555,7 +555,9 @@ const ListingView = () => {
                         style={{ color: theme.tiffanyBlue }}
                       />
                       <Text type="secondary">
-                        {listing.address || "Address unavailable"}
+                        {typeof listing.address === "object" && listing.address !== null
+                          ? listing.address.formatted
+                          : listing.address || "Address unavailable"}
                       </Text>
                     </Flex>
                     <Tooltip
