@@ -27,9 +27,8 @@ const { Title } = Typography;
 const All = () => {
   const navigate = useNavigate();
   const authState = useAppSelector((state) => state.auth);
-  const { user, token, isAuthenticated } = authState;
-  const isLoggedIn = Boolean(token) || isAuthenticated;
-  const userEmail = user?.email || "";
+  const isLoggedIn = authState.isAuthenticated;
+  const userEmail = authState.user?.email || "";
 
   const handleToggle = () => {
     navigate("/host");

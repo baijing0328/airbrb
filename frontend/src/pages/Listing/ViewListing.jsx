@@ -14,8 +14,9 @@ import {
   Divider,
   Empty,
   DatePicker,
-  Input,
-  Select,
+  Tooltip,
+  Modal,
+  Progress,
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -23,6 +24,7 @@ import {
   DollarOutlined,
   StarFilled,
   CalendarOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import dayjs from "dayjs";
@@ -57,6 +59,8 @@ const ListingView = () => {
   const [reviewComment, setReviewComment] = useState("");
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [selectedRatingFilter, setSelectedRatingFilter] = useState(null);
   const bookingsSectionRef = useRef(null);
   const { user, token, isAuthenticated } = useAppSelector(
     (state) => state.auth
@@ -64,6 +68,81 @@ const ListingView = () => {
   const isLoggedIn = Boolean(token) || isAuthenticated;
   const userEmail = user?.email || "";
   const searchContext = location.state?.searchCriteria;
+
+  // Calculate rating distribution
+  const ratingDistribution = useMemo(() => {
+    const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const total = listing?.reviews?.length || 0;
+
+    if (total === 0) return []; // Return empty array if no reviews
+
+    listing.reviews.forEach((review) => {
+      const rating = Math.round(review.rating);
+      if (rating >= 1 && rating <= 5) {
+        distribution[rating] = (distribution[rating] || 0) + 1;
+      }
+    });
+
+    // Convert to array properly
+    return Object.keys(distribution).map((key) => {
+      const stars = Number(key);
+      const count = distribution[stars];
+      return {
+        stars,
+        count,
+        percent: (count / total) * 100,
+      };
+    });
+  }, [listing?.reviews]);
+
+  const filteredReviews = useMemo(() => {
+    if (!selectedRatingFilter || !listing?.reviews) return [];
+    return listing.reviews.filter(
+      (review) => Math.round(review.rating) === selectedRatingFilter
+    );
+  }, [selectedRatingFilter, listing?.reviews]);
+
+  const renderRatingTooltip = () => {
+    if (!Array.isArray(ratingDistribution) || ratingDistribution.length === 0)
+      return null;
+
+    // Create a copy before sorting
+    const sortedDistribution = [...ratingDistribution].sort(
+      (a, b) => b.stars - a.stars
+    );
+
+    return (
+      <div style={{ width: 300 }}>
+        <Title level={5} style={{ color: "white", marginBottom: 12 }}>
+          Rating Breakdown
+        </Title>
+        {sortedDistribution.map(({ stars, count, percent }) => (
+          <Flex
+            key={stars}
+            align="center"
+            gap={8}
+            style={{ marginBottom: 8, cursor: "pointer" }}
+            onClick={() => {
+              setSelectedRatingFilter(stars);
+              setRatingModalOpen(true);
+            }}
+          >
+            <Text style={{ color: "white", minWidth: 60 }}>{stars} stars</Text>
+            <Progress
+              percent={percent}
+              showInfo={false}
+              strokeColor={theme.sunblownYellow}
+              trailColor="rgba(255,255,255,0.2)"
+              style={{ margin: 0, flex: 1 }}
+            />
+            <Text style={{ color: "white", minWidth: 40, textAlign: "right" }}>
+              {count} ({Math.round(percent)}%)
+            </Text>
+          </Flex>
+        ))}
+      </div>
+    );
+  };
 
   const fetchListingDetails = useCallback(async () => {
     try {
@@ -413,6 +492,37 @@ const ListingView = () => {
         </Flex>
       </Header>
       <Content className="host-content">
+        <Modal
+          title={`${selectedRatingFilter} Star Reviews`}
+          open={ratingModalOpen}
+          onCancel={() => setRatingModalOpen(false)}
+          footer={null}
+          width={600}
+        >
+          <List
+            itemLayout="vertical"
+            dataSource={filteredReviews}
+            renderItem={(review, index) => (
+              <List.Item key={review.id || index}>
+                <Flex justify="space-between" align="center">
+                  <Text strong>{review.reviewer || "Guest"}</Text>
+                  <Flex align="center" gap={4}>
+                    <StarFilled style={{ color: theme.sunblownYellow }} />
+                    <Text>{review.rating}</Text>
+                  </Flex>
+                </Flex>
+                <Paragraph style={{ marginTop: 8 }}>
+                  {review.comment || review.text || "No comment provided."}
+                </Paragraph>
+                {review.createdAt && (
+                  <Text type="secondary">
+                    Stayed {dayjs(review.createdAt).format("MMM YYYY")}
+                  </Text>
+                )}
+              </List.Item>
+            )}
+          />
+        </Modal>
         <div className="host-content__wrapper">
           {loading ? (
             <div className="listing-view__loading">
@@ -439,13 +549,24 @@ const ListingView = () => {
                         {listing.address || "Address unavailable"}
                       </Text>
                     </Flex>
-                    <Flex align="center" gap={6}>
-                      <Rate allowHalf disabled value={averageRating} />
-                      <Text strong>
-                        {averageRating.toFixed(1)} · {reviews.length} review
-                        {reviews.length === 1 ? "" : "s"}
-                      </Text>
-                    </Flex>
+                    <Tooltip
+                      title={renderRatingTooltip()}
+                      placement="bottomLeft"
+                      color={theme.darkMars}
+                      overlayInnerStyle={{ padding: 16 }}
+                    >
+                      <Flex
+                        align="center"
+                        gap={6}
+                        style={{ cursor: "pointer", width: "fit-content" }}
+                      >
+                        <Rate allowHalf disabled value={averageRating} />
+                        <Text strong>
+                          {averageRating.toFixed(1)} · {reviews.length} review
+                          {reviews.length === 1 ? "" : "s"}
+                        </Text>
+                      </Flex>
+                    </Tooltip>
                   </div>
                   <div className="listing-view__price">
                     <div className="listing-view__price-info">
