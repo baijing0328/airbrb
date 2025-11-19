@@ -28,6 +28,7 @@ import {
   HostListingPromptData,
   theme,
 } from "../../utils/utils";
+import AddressAutocomplete from "../AddressAutocomplete";
 
 const HostListingForm = ({ mode, onSuccess, listingId }) => {
   const [form] = Form.useForm();
@@ -157,7 +158,7 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
         label="Address"
         rules={HostListngFormRules.address}
       >
-        <Input />
+        <AddressAutocomplete placeholder="Start typing address..." />
       </Form.Item>
 
       <Form.Item
