@@ -167,11 +167,12 @@ const HostItem = ({
           <Flex justify="space-between" align="center">
             <Typography.Title
               level={5}
-              style={{ margin: 0, fontSize: "16px", color: theme.darkMars }}
+              ellipsis={{ tooltip: title }}
+              style={{ margin: 0, fontSize: "16px", color: theme.darkMars, flex: 1 }}
             >
               {title}
             </Typography.Title>
-            <Flex align="center" gap={8}>
+            <Flex align="center" gap={8} style={{ flexShrink: 0 }}>
               {renderPropertyType(metadata)}
               {showActions && onManageBookings && (
                 <Button

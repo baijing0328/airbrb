@@ -31,7 +31,7 @@ const ProfitChart = ({ data }) => {
         return { name: "Profit", value: `$${datum.profit.toFixed(2)}` };
       },
     },
-    style:{
+    style: {
       fill: theme.tiffanyBlue,
     },
     interactions: [{ type: "element-active" }], // Enable active state on hover
