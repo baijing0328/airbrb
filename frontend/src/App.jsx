@@ -6,10 +6,12 @@ import All from "./pages/Listing/All";
 import EditHostListing from "./pages/Listing/EditHostListing";
 import ListingView from "./pages/Listing/ViewListing";
 import HostRequests from "./pages/Listing/HostRequests";
+import NotificationMenu from "./components/NotificationMenu";
 
 function App() {
   return (
     <BrowserRouter>
+      <NotificationMenu />
       <Routes>
         <Route path="/" element={<Navigate to="/all" replace />} />
         <Route path="/login" element={<Login />} />
