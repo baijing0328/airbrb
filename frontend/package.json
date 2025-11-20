@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@ant-design/charts": "^2.6.6",
     "@ant-design/icons": "^6.1.0",
     "@reduxjs/toolkit": "^2.9.2",
     "antd": "^5.28.0",
