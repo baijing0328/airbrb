@@ -16,6 +16,7 @@ import {
   InboxOutlined,
   MinusCircleOutlined,
   InfoCircleOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import { fileToDataUrl, formatFormData } from "../../utils/helper";
 import {
@@ -97,6 +98,58 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
     }
   }, [mode, listingId, form]);
 
+  const handleJsonUpload = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target.result);
+
+        // Basic validation
+        if (!json.title || !json.address || !json.price || !json.metadata) {
+          message.error("Invalid JSON format: Missing required fields");
+          return;
+        }
+
+        // Populate form
+        const formValues = {
+          title: json.title,
+          address: json.address,
+          price: json.price.toString(),
+          property_type: json.metadata?.property_type,
+          bathrooms: json.metadata?.bathrooms,
+          bedrooms: json.metadata?.bedrooms || [{ single: 0, double: 0 }],
+          amenities: json.metadata?.amenities,
+        };
+
+        form.setFieldsValue(formValues);
+
+        // Handle images
+        if (json.thumbnail) {
+          // Check if thumbnail is video or image
+          if (json.thumbnail.includes("youtube.com") || json.thumbnail.includes("youtu.be")) {
+             setThumbnailType("video");
+             form.setFieldsValue({ youtubeUrl: json.thumbnail, thumbnail: null });
+          } else {
+             setThumbnailType("image");
+             setImagePreview(json.thumbnail);
+             form.setFieldsValue({ thumbnail: json.thumbnail });
+          }
+        }
+
+        if (json.metadata?.property_images) {
+          setPropertyImages(json.metadata.property_images);
+        }
+
+        message.success("Listing data loaded from JSON");
+      } catch (error) {
+        console.error(error);
+        message.error("Failed to parse JSON file");
+      }
+    };
+    reader.readAsText(file);
+    return false; // Prevent upload
+  };
+
   const handleSubmit = async (values) => {
     try {
       setSaving(true);
@@ -149,6 +202,21 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
       onFinish={handleSubmit}
       autoComplete="off"
     >
+      {mode === "create" && (
+        <Form.Item label="Import JSON" wrapperCol={{ span: 14 }}>
+          <Upload
+            accept=".json"
+            beforeUpload={handleJsonUpload}
+            showUploadList={false}
+          >
+            <Button icon={<UploadOutlined />}>Upload Listing JSON</Button>
+          </Upload>
+          <div style={{ marginTop: 8, color: "#888", fontSize: "12px" }}>
+            Upload a JSON file to pre-fill listing data.
+          </div>
+        </Form.Item>
+      )}
+
       <Form.Item name="title" label="Title" rules={HostListngFormRules.title}>
         <Input />
       </Form.Item>
