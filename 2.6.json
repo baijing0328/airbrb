@@ -1,0 +1,33 @@
+{
+  "title": "Luxury City Apartment",
+  "address": {
+    "street": "123 Main St",
+    "city": "Sydney",
+    "state": "NSW",
+    "postcode": "2000",
+    "country": "Australia",
+    "lat": -33.8688,
+    "lon": 151.2093
+  },
+  "price": 350,
+  "thumbnail": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+  "metadata": {
+    "property_type": "Apartment",
+    "bathrooms": 2,
+    "bedrooms": [
+      { "single": 0, "double": 1 },
+      { "single": 2, "double": 0 }
+    ],
+    "amenities": [
+      "WiFi",
+      "Air Conditioning",
+      "Kitchen",
+      "Pool"
+    ],
+    "property_images": [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2"
+    ]
+  }
+}
+
