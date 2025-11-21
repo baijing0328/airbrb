@@ -370,7 +370,7 @@ const All = () => {
           ) : sortedListings.length === 0 ? (
             <Empty description="No published listings available yet." />
           ) : (
-            <Flex gap="middle" wrap="wrap">
+            <Flex gap="middle" wrap="wrap" justify="space-between">
               {sortedListings.map((listing) => {
                 return (
                   <HostItem

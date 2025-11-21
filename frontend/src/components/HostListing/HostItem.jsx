@@ -4,6 +4,7 @@ import {
   StarOutlined,
   HomeOutlined,
   CalendarOutlined,
+  EnvironmentOutlined,
 } from "@ant-design/icons";
 import { TeamOutlined } from "@ant-design/icons";
 import EditHostItem from "./EditHostItem";
@@ -73,7 +74,7 @@ const HostItem = ({
     <Card
       hoverable
       style={{
-        width: 320,
+        width: 335,
         borderRadius: "12px",
         overflow: "hidden",
         boxShadow: `0 2px 8px ${theme.tiffanyBlue}40`,
@@ -203,15 +204,34 @@ const HostItem = ({
           </Flex>
         }
         description={
-          <Flex align="center" gap="small" style={{ marginTop: "8px" }}>
-            <HomeOutlined style={{ color: theme.marsGreen }} />
-            <Typography.Text
-              type="secondary"
-              style={{ fontSize: "14px", color: theme.marsGreen }}
-            >
-              {metadata?.beds || 0} Beds · {metadata?.bathrooms || 0} Baths
-            </Typography.Text>
-          </Flex>
+          <>
+            <Flex align="center" gap="small" style={{ marginTop: "8px" }}>
+              <HomeOutlined style={{ color: theme.marsGreen }} />
+              <Typography.Text
+                type="secondary"
+                style={{ fontSize: "14px", color: theme.marsGreen }}
+              >
+                {metadata?.beds || 0} Beds · {metadata?.bathrooms || 0} Baths
+              </Typography.Text>
+            </Flex>
+            {listing.address && (
+              <Flex align="center" gap="small" style={{ marginTop: "4px" }}>
+                <EnvironmentOutlined style={{ color: theme.marsGreen }} />
+                <Typography.Text
+                  type="secondary"
+                  style={{ fontSize: "14px", color: theme.marsGreen }}
+                  ellipsis
+                >
+                  {typeof listing.address === "object"
+                    ? listing.address.formatted ||
+                      `${listing.address.street || ""} ${
+                        listing.address.city || ""
+                      }`
+                    : listing.address}
+                </Typography.Text>
+              </Flex>
+            )}
+          </>
         }
       />
 

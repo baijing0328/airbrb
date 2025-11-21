@@ -41,8 +41,6 @@ const { Title, Text } = Typography;
 const HostRequests = () => {
   const { listingId } = useParams();
   const navigate = useNavigate();
-  const authState = useAppSelector((state) => state.auth);
-  const currentUserEmail = authState.user?.email;
 
   const [listing, setListing] = useState(null);
   const [loadingListing, setLoadingListing] = useState(true);
