@@ -11,7 +11,7 @@ import ProfitChart from "../../components/ProfitChart";
 import { getListings, getListing } from "../../services/listingManageService";
 import { getBookings } from "../../services/bookingService";
 import { useAppSelector } from "../../store/hooks";
-import "./Host.scss";
+import styles from "./Host.module.scss";
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -123,14 +123,14 @@ const Host = () => {
   }, [fetchListingsAndBookings]);
 
   return (
-    <Layout className="host-layout">
-      <Header className="host-header">
-        <div className="host-header__left">
-          <Title level={3} className="host-header__title">
+    <Layout className={styles["host-layout"]}>
+      <Header className={styles["host-header"]}>
+        <div className={styles["host-header__left"]}>
+          <Title level={3} className={styles["host-header__title"]}>
             AirBrB Host
           </Title>
         </div>
-        <div className="host-header__right">
+        <div className={styles["host-header__right"]}>
           <Button
             type="default"
             icon={<UnorderedListOutlined />}
@@ -143,8 +143,8 @@ const Host = () => {
           <LogoutBtn />
         </div>
       </Header>
-      <Content className="host-content">
-        <div className="host-content__wrapper">
+      <Content className={styles["host-content"]}>
+        <div className={styles["host-content__wrapper"]}>
           {loading ? (
             <div style={{ textAlign: "center", padding: "50px" }}>
               <Spin size="large" />

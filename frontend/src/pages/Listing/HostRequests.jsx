@@ -31,9 +31,8 @@ import {
   acceptBooking,
   declineBooking,
 } from "../../services/bookingService";
-import { useAppSelector } from "../../store/hooks";
 import { theme } from "../../utils/utils";
-import "./Host.scss";
+import styles from "./Host.module.scss";
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -210,14 +209,14 @@ const HostRequests = () => {
   const loading = loadingListing || loadingBookings;
 
   return (
-    <Layout className="host-layout">
-      <Header className="host-header">
-        <div className="host-header__left">
-          <Title level={3} className="host-header__title">
+    <Layout className={styles["host-layout"]}>
+      <Header className={styles["host-header"]}>
+        <div className={styles["host-header__left"]}>
+          <Title level={3} className={styles["host-header__title"]}>
             Booking Requests
           </Title>
         </div>
-        <div className="host-header__right">
+        <div className={styles["host-header__right"]}>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <Button
               type="default"
@@ -231,8 +230,8 @@ const HostRequests = () => {
           </div>
         </div>
       </Header>
-      <Content className="host-content">
-        <div className="host-content__wrapper">
+      <Content className={styles["host-content"]}>
+        <div className={styles["host-content__wrapper"]}>
           {loading ? (
             <div style={{ textAlign: "center", padding: 40 }}>
               <Spin size="large" />
