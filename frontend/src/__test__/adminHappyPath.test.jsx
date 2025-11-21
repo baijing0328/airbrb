@@ -165,3 +165,149 @@ vi.mock("../services/authService", () => ({
   loginAPI: (...args) => loginAPIMock(...args),
   logoutAPI: () => logoutAPIMock(),
 }));
+
+const getListingsMock = vi.fn(async () => ({
+  listings: backendState.listings.map((listing) => ({ id: listing.id })),
+}));
+const getListingMock = vi.fn(async (listingId) => {
+  // Handle both number and string IDs
+  const numericId =
+    typeof listingId === "string" ? Number(listingId) : listingId;
+  const listing = backendState.listings.find((item) => item.id === numericId);
+  if (!listing) {
+    throw new Error("Listing not found");
+  }
+  return { listing };
+});
+const newListingMock = vi.fn(async (params) => {
+  const listing = {
+    id: backendState.listingCounter++,
+    owner: backendState.currentUserEmail,
+    reviews: [],
+    postedOn: null,
+    availability: params.metadata?.availability || [],
+    published: false,
+    ...params,
+  };
+  backendState.listings.push(listing);
+  return { listingId: listing.id };
+});
+const updateListingMock = vi.fn(async (listingId, params) => {
+  // Handle both number and string IDs
+  const numericId =
+    typeof listingId === "string" ? Number(listingId) : listingId;
+  const index = backendState.listings.findIndex(
+    (listing) => listing.id === numericId
+  );
+  if (index === -1) {
+    throw new Error("Listing not found");
+  }
+  backendState.listings[index] = {
+    ...backendState.listings[index],
+    ...params,
+  };
+  return { listing: backendState.listings[index] };
+});
+const publishListingMock = vi.fn(async (listingId, availability) => {
+  // Handle both number and string IDs
+  const numericId =
+    typeof listingId === "string" ? Number(listingId) : listingId;
+  const listing = backendState.listings.find((item) => item.id === numericId);
+  if (!listing) {
+    throw new Error("Listing not found");
+  }
+  listing.availability = availability;
+  listing.published = true;
+  listing.postedOn = new Date().toISOString();
+  return {};
+});
+const unpublishListingMock = vi.fn(async (listingId) => {
+  // Handle both number and string IDs
+  const numericId =
+    typeof listingId === "string" ? Number(listingId) : listingId;
+  const listing = backendState.listings.find((item) => item.id === numericId);
+  if (listing) {
+    listing.published = false;
+    listing.availability = [];
+    listing.postedOn = null;
+  }
+  return {};
+});
+
+vi.mock("../services/listingManageService", () => ({
+  getListings: () => getListingsMock(),
+  getListing: (listingId) => getListingMock(listingId),
+  newListing: (params) => newListingMock(params),
+  updateListing: (listingId, params) => updateListingMock(listingId, params),
+  publishListing: (listingId, availability) =>
+    publishListingMock(listingId, availability),
+  unpublishListing: (listingId) => unpublishListingMock(listingId),
+}));
+
+const getBookingsMock = vi.fn(async () => ({
+  bookings: backendState.bookings,
+}));
+
+const newBookingMock = vi.fn(async (listingId, params) => {
+  backendState.bookings.push({
+    id: backendState.bookingCounter++,
+    listingId: Number(listingId),
+    owner: backendState.currentUserEmail,
+    status: "pending",
+    dateRange: params.dateRange,
+    totalPrice: params.totalPrice,
+  });
+  return {};
+});
+
+vi.mock("../services/bookingService", () => ({
+  getBookings: () => getBookingsMock(),
+  newBooking: (listingId, params) => newBookingMock(listingId, params),
+}));
+
+vi.mock("../components/NotificationMenu", () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
+vi.mock("../components/ProfitChart", () => ({
+  __esModule: true,
+  default: () => <div data-testid="profit-chart" />,
+}));
+
+vi.mock("../components/LocationMap", () => ({
+  __esModule: true,
+  default: () => <div data-testid="map-placeholder" />,
+}));
+
+const availabilityWindow = [
+  {
+    start: dayjs().add(1, "day").format("YYYY-MM-DD"),
+    end: dayjs().add(5, "day").format("YYYY-MM-DD"),
+  },
+];
+
+vi.mock("../components/HostListing/PublishHostItem", async () => {
+  const React = await vi.importActual("react");
+  const listingService = await import("../services/listingManageService");
+
+  return {
+    __esModule: true,
+    default: ({ listingId, isPublished, onSuccess }) => {
+      const handleClick = async () => {
+        if (isPublished) {
+          await listingService.unpublishListing(listingId);
+        } else {
+          await listingService.publishListing(listingId, availabilityWindow);
+        }
+        onSuccess?.();
+      };
+      return (
+        <button onClick={handleClick}>
+          {isPublished ? "Unpublish listing" : "Publish listing"}
+        </button>
+      );
+    },
+  };
+});
+
