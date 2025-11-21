@@ -14,7 +14,7 @@ import {
   Col,
 } from "antd";
 import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
-import "./SearchBar.scss";
+import styles from "./SearchBar.module.scss";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -78,40 +78,40 @@ const SearchBar = ({ onSearch, onClear }) => {
 
   return (
     <>
-      <Card className="search-card">
+      <Card className={styles['searchCard']}>
         <Flex
-          className="search-card__form"
+          className={styles['searchCardForm']}
           gap="middle"
           align="center"
           wrap="wrap"
         >
-          <div className="search-card__field search-card__field--grow">
-            <span className="search-card__label">Destination</span>
+          <div className={`${styles['searchCardField']} grow`}>
+            <span className={styles['searchCardLabel']}>Destination</span>
             <Input
               placeholder="Search by title or city"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              className="search-card__input"
+              className={styles['searchCardInput']}
             />
           </div>
 
-          <div className="search-card__divider" />
+          <div className={styles['searchCardDivider']} />
 
-          <div className="search-card__field">
-            <span className="search-card__label">Dates</span>
+          <div className={styles['searchCardField']}>
+            <span className={styles['searchCardLabel']}>Dates</span>
             <RangePicker
               value={dateRange}
               onChange={(dates) => setDateRange(dates || [null, null])}
-              className="search-card__date"
+              className={styles['searchCardDate']}
               allowEmpty={[true, true]}
             />
           </div>
 
-          <Flex gap="small" align="center" className="search-card__actions">
+          <Flex gap="small" align="center" className={styles['searchCardActions']}>
             <Button
               icon={<FilterOutlined />}
               onClick={() => setIsModalVisible(true)}
-              className="search-card__filter-btn"
+              className={styles['searchCardFilterBtn']}
               size="large"
             >
               Filters
@@ -120,14 +120,14 @@ const SearchBar = ({ onSearch, onClear }) => {
               type="primary"
               icon={<SearchOutlined />}
               onClick={triggerSearch}
-              className="search-card__search-btn"
+              className={styles['searchCardSearchBtn']}
               size="large"
             >
               Search
             </Button>
             <Button
               type="link"
-              className="search-card__clear-btn"
+              className={styles['searchCardClearBtn']}
               onClick={handleClearAll}
             >
               Clear all
@@ -137,7 +137,7 @@ const SearchBar = ({ onSearch, onClear }) => {
       </Card>
       <Modal
         title="More Filters"
-        className="search-filter-modal"
+        className={styles['searchFilterModal']}
         open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={[
@@ -153,9 +153,9 @@ const SearchBar = ({ onSearch, onClear }) => {
         <Form
           form={form}
           layout="vertical"
-          className="search-filter-modal__form"
+          className={styles['searchFilterModalForm']}
         >
-          <div className="search-filter-modal__section">
+          <div className={styles['searchFilterModalSection']}>
             <Title level={5}>Bedrooms</Title>
             <p>Filter by the number of bedrooms.</p>
             <Row gutter={16}>
@@ -186,7 +186,7 @@ const SearchBar = ({ onSearch, onClear }) => {
             </Row>
           </div>
 
-          <div className="search-filter-modal__section">
+          <div className={styles['searchFilterModalSection']}>
             <Title level={5}>Price</Title>
             <p>Filter by the price per night.</p>
             <Row gutter={16}>
@@ -215,7 +215,7 @@ const SearchBar = ({ onSearch, onClear }) => {
             </Row>
           </div>
 
-          <div className="search-filter-modal__section">
+          <div className={styles['searchFilterModalSection']}>
             <Title level={5}>Sort By</Title>
             <p>Sort the results based on your preference.</p>
             <Form.Item>
