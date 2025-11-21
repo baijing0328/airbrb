@@ -42,7 +42,7 @@ import LocationMap from "../../components/LocationMap";
 import bedroomIcon from "../../assets/bedroom.svg";
 import bedIcon from "../../assets/bed.svg";
 import bathroomIcon from "../../assets/bathroom.svg";
-import "./ViewListing.scss";
+import styles from "./ViewListing.module.scss";
 
 const { Header, Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -115,7 +115,7 @@ const ListingView = () => {
     );
 
     return (
-      <div className="rating-breakdown-container">
+      <div className={styles['ratingBreakdownContainer']}>
         <Title level={5} style={{ color: theme.darkMars, marginBottom: 12 }}>
           Rating Breakdown
         </Title>
@@ -124,22 +124,22 @@ const ListingView = () => {
             key={stars}
             align="center"
             gap={6}
-            className="rating-breakdown-row"
+            className={styles['ratingBreakdownRow']}
             style={{ marginBottom: 4, cursor: "pointer", width: "100%" }}
             onClick={() => {
               setSelectedRatingFilter(stars);
               setRatingModalOpen(true);
             }}
           >
-            <Text className="rating-label">{stars} stars</Text>
+            <Text className={styles['ratingLabel']}>{stars} stars</Text>
             <Progress
               percent={percent}
               showInfo={false}
               strokeColor={theme.sunblownYellow}
               trailColor={`${theme.lightTiffany}80`}
-              className="rating-progress"
+              className={styles['ratingProgress']}
             />
-            <Text className="rating-count">
+            <Text className={styles['ratingCount']}>
               {count} ({Math.round(percent)}%)
             </Text>
           </Flex>
@@ -477,8 +477,8 @@ const ListingView = () => {
   };
 
   return (
-    <Layout className="host-layout listing-view">
-      <Header className="host-header listing-view__header">
+    <Layout className={`host-layout ${styles['listingView']}`}>
+      <Header className={`host-header ${styles['listingViewHeader']}`}>
         <div className="host-header__left">
           <Title level={3} className="host-header__title">
             AirBrB
@@ -503,8 +503,8 @@ const ListingView = () => {
           onCancel={() => setRatingModalOpen(false)}
           footer={null}
           width={600}
-          className="listing-view__modal"
-          wrapClassName="listing-view__modal-wrap"
+          className={styles['listingViewModal']}
+          wrapClassName={styles['listingViewModalWrap']}
         >
           <List
             itemLayout="vertical"
@@ -512,7 +512,7 @@ const ListingView = () => {
             renderItem={(review, index) => (
               <List.Item
                 key={review.id || index}
-                className="review-modal__item"
+                className={styles['reviewModalItem']}
               >
                 <Flex justify="space-between" align="center">
                   <Text strong>{review.reviewer || "Guest"}</Text>
@@ -535,14 +535,14 @@ const ListingView = () => {
         </Modal>
         <div className="host-content__wrapper">
           {loading ? (
-            <div className="listing-view__loading">
+            <div className={styles['listingViewLoading']}>
               <Spin size="large" />
             </div>
           ) : !listing ? (
             <Empty description="Listing not found." />
           ) : (
-            <div className="listing-view__content">
-              <Card className="listing-view__summary" variant="borderless">
+            <div className={styles['listingViewContent']}>
+              <Card className={styles['listingViewSummary']} variant="borderless">
                 <Flex justify="space-between" align="flex-start" wrap="wrap">
                   <div>
                     <Tag color="cyan" style={{ marginBottom: 12 }}>
@@ -565,7 +565,7 @@ const ListingView = () => {
                     <Tooltip
                       title={renderRatingTooltip()}
                       placement="bottomLeft"
-                      overlayClassName="listing-view__tooltip"
+                      overlayClassName={styles['listingViewTooltip']}
                     >
                       <Flex
                         align="center"
@@ -580,8 +580,8 @@ const ListingView = () => {
                       </Flex>
                     </Tooltip>
                   </div>
-                  <div className="listing-view__price">
-                    <div className="listing-view__price-info">
+                  <div className={styles['listingViewPrice']}>
+                    <div className={styles['listingViewPriceInfo']}>
                       <Text type="secondary">{priceLabel}</Text>
                       <Title
                         level={3}
@@ -592,7 +592,7 @@ const ListingView = () => {
                       <Text type="secondary">{renderPriceBreakdown()}</Text>
                     </div>
                     <Button
-                      className="listing-view__bookings-btn"
+                      className={styles['listingViewBookingsBtn']}
                       icon={<CalendarOutlined />}
                       onClick={handleScrollToBookings}
                     >
@@ -600,39 +600,39 @@ const ListingView = () => {
                     </Button>
                   </div>
                 </Flex>
-                <Divider className="listing-view__divider" />
+                <Divider className={styles['listingViewDivider']} />
                 <Flex
-                  className="listing-view__stats-bar"
+                  className={styles['listingViewStatsBar']}
                   gap="large"
                   wrap="wrap"
                 >
-                  <div className="listing-view__stats-pill">
+                  <div className={styles['listingViewStatsPill']}>
                     <img
                       src={bedroomIcon}
                       alt="Bedrooms"
-                      className="listing-view__stats-pill-icon"
+                      className={styles['listingViewStatsPillIcon']}
                     />
                     <div>
                       <Text strong>{bedroomCount}</Text>
                       <Text type="secondary">Bedrooms</Text>
                     </div>
                   </div>
-                  <div className="listing-view__stats-pill">
+                  <div className={styles['listingViewStatsPill']}>
                     <img
                       src={bedIcon}
                       alt="Beds"
-                      className="listing-view__stats-pill-icon"
+                      className={styles['listingViewStatsPillIcon']}
                     />
                     <div>
                       <Text strong>{bedCount}</Text>
                       <Text type="secondary">Beds</Text>
                     </div>
                   </div>
-                  <div className="listing-view__stats-pill">
+                  <div className={styles['listingViewStatsPill']}>
                     <img
                       src={bathroomIcon}
                       alt="Bathrooms"
-                      className="listing-view__stats-pill-icon"
+                      className={styles['listingViewStatsPillIcon']}
                     />
                     <div>
                       <Text strong>{bathrooms}</Text>
@@ -640,7 +640,7 @@ const ListingView = () => {
                     </div>
                   </div>
                   {hasSearchDates && (
-                    <div className="listing-view__stats-pill">
+                    <div className={styles['listingViewStatsPill']}>
                       <CalendarOutlined />
                       <div>
                         <Text strong>{nights}</Text>
@@ -652,15 +652,15 @@ const ListingView = () => {
               </Card>
 
               {mediaItems.length > 0 && (
-                <Card className="listing-view__media" variant="borderless">
-                  <div className="listing-view__media-grid">
+                <Card className={styles['listingViewMedia']} variant="borderless">
+                  <div className={styles['listingViewMediaGrid']}>
                     {mediaItems.map((media, index) => (
                       <div
                         key={`${media.src}-${index}`}
-                        className={`listing-view__media-item listing-view__media-item--${index}`}
+                        className={`${styles['listingViewMediaItem']} listing-view__media-item--${index}`}
                       >
                         {media.type === "video" ? (
-                          <div className="listing-view__media-video">
+                          <div className={styles['listingViewMediaVideo']}>
                             <iframe
                               src={media.src}
                               title={`${listing.title}-video-${index + 1}`}
@@ -673,7 +673,7 @@ const ListingView = () => {
                           <Image
                             src={media.src}
                             alt={`${listing.title}-image-${index + 1}`}
-                            className="listing-view__media-image"
+                            className={styles['listingViewMediaImage']}
                             height="100%"
                             width="100%"
                             style={{ objectFit: "cover" }}
@@ -685,7 +685,7 @@ const ListingView = () => {
                 </Card>
               )}
               <Card
-                className="listing-view__card listing-view__card--glass listing-view__booking-form"
+                className={`${styles['listingViewCard']} ${styles['listingViewCardGlass']} ${styles['listingViewBookingForm']}`}
                 title="Book this stay"
                 variant="borderless"
               >
@@ -732,7 +732,7 @@ const ListingView = () => {
               </Card>
               {isLoggedIn && (
                 <Card
-                  className="listing-view__card listing-view__card--glass listing-view__review-form"
+                  className={`${styles['listingViewCard']} ${styles['listingViewCardGlass']}`}
                   title="Leave a review"
                   variant="borderless"
                 >
@@ -790,7 +790,7 @@ const ListingView = () => {
               )}
               <Flex gap="large" wrap="wrap">
                 <Card
-                  className="listing-view__card listing-view__card--glass"
+                  className={`${styles['listingViewCard']} ${styles['listingViewCardGlass']}`}
                   title="Amenities"
                   variant="borderless"
                   style={{ width: '100%' }}
@@ -801,7 +801,7 @@ const ListingView = () => {
                         <Tag
                           key={amenity}
                           color="geekblue"
-                          className="listing-view__amenity"
+                          className={styles['listingViewAmenity']}
                         >
                           {amenity}
                         </Tag>
@@ -814,7 +814,7 @@ const ListingView = () => {
               </Flex>
 
               <Card
-                className="listing-view__card listing-view__card--glass"
+                className={`${styles['listingViewCard']} ${styles['listingViewCardGlass']}`}
                 title="Location"
                 variant="borderless"
               >
@@ -832,7 +832,7 @@ const ListingView = () => {
               </Card>
 
               <Card
-                className="listing-view__card listing-view__card--glass"
+                className={`${styles['listingViewCard']} ${styles['listingViewCardGlass']}`}
                 title="Description"
                 variant="borderless"
               >
@@ -843,7 +843,7 @@ const ListingView = () => {
               </Card>
 
               <Card
-                className="listing-view__card listing-view__card--glass listing-view__reviews"
+                className={`${styles['listingViewCard']} ${styles['listingViewCardGlass']} ${styles['listingViewReviews']}`}
                 title="Reviews"
                 variant="borderless"
               >
@@ -856,7 +856,7 @@ const ListingView = () => {
                     renderItem={(review, index) => (
                       <List.Item
                         key={review.id || index}
-                        className="listing-view__review-item"
+                        className={styles['listingViewReviewItem']}
                       >
                         <Flex justify="space-between" align="center">
                           <Text strong>{review.reviewer || "Guest"}</Text>
@@ -885,7 +885,7 @@ const ListingView = () => {
 
               <div ref={bookingsSectionRef}>
                 <Card
-                  className="listing-view__card listing-view__card--glass listing-view__bookings"
+                  className={`${styles['listingViewCard']} ${styles['listingViewCardGlass']} ${styles['listingViewBookings']}`}
                   title="Your bookings for this listing"
                   variant="borderless"
                   extra={
@@ -914,27 +914,27 @@ const ListingView = () => {
                       renderItem={(booking) => (
                         <List.Item
                           key={booking.id}
-                          className="listing-view__booking-item"
+                          className={styles['listingViewBookingItem']}
                         >
-                          <div className="booking-item__header">
-                            <div className="booking-item__status">
+                          <div className={styles['bookingItemHeader']}>
+                            <div className={styles['bookingItemStatus']}>
                               <Text strong>Status</Text>
                               <Tag
                                 color={getBookingStatusColor(booking.status)}
-                                className="booking-item__status-tag"
+                                className={styles['bookingItemStatusTag']}
                               >
                                 {booking.status || "Unknown"}
                               </Tag>
                             </div>
                             <Text type="secondary">Booking #{booking.id}</Text>
                           </div>
-                          <div className="booking-item__body">
+                          <div className={styles['bookingItemBody']}>
                             <div>
                               <Text type="secondary">Dates</Text>
                               <Text>{renderBookingDateRange(booking)}</Text>
                             </div>
                             {booking.totalPrice && (
-                              <div className="booking-item__price">
+                              <div className={styles['bookingItemPrice']}>
                                 <Text type="secondary">Total</Text>
                                 <Flex align="center" gap={6}>
                                   <DollarOutlined />
