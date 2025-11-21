@@ -311,3 +311,133 @@ vi.mock("../components/HostListing/PublishHostItem", async () => {
   };
 });
 
+vi.mock("../components/HostListing/HostListingForm", async () => {
+  const React = await vi.importActual("react");
+  const listingService = await import("../services/listingManageService");
+  const { useEffect, useState } = React;
+
+  return {
+    __esModule: true,
+    default: ({ mode, listingId, onSuccess }) => {
+      const [title, setTitle] = useState("");
+      const [thumbnail, setThumbnail] = useState("");
+
+      useEffect(() => {
+        if (mode === "edit" && listingId) {
+          listingService.getListing(listingId).then(({ listing }) => {
+            setTitle(listing.title || "");
+            setThumbnail(listing.thumbnail || "");
+          });
+        } else if (mode === "create") {
+          setTitle("");
+          setThumbnail("");
+        }
+      }, [mode, listingId]);
+
+      const handleSubmit = async (event) => {
+        event.preventDefault();
+        const payload = {
+          title,
+          thumbnail,
+          price: 250,
+          address: { formatted: "123 Test Street", city: "Sydney" },
+          metadata: {
+            bedrooms: 2,
+            bathrooms: 1,
+            amenities: ["WiFi"],
+          },
+        };
+
+        if (mode === "create") {
+          await listingService.newListing(payload);
+        } else {
+          await listingService.updateListing(listingId, payload);
+        }
+        onSuccess?.();
+      };
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <label>
+            Listing Title
+            <input
+              aria-label="Listing title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Listing title"
+            />
+          </label>
+          <label>
+            Thumbnail URL
+            <input
+              aria-label="Thumbnail url"
+              value={thumbnail}
+              onChange={(e) => setThumbnail(e.target.value)}
+              placeholder="Thumbnail URL"
+            />
+          </label>
+          <button type="submit">
+            {mode === "create" ? "Create Listing" : "Save Changes"}
+          </button>
+        </form>
+      );
+    },
+  };
+});
+
+vi.mock("../components/HostListing/HostItem", async () => {
+  const React = await vi.importActual("react");
+  const { default: PublishHostItem } = await import(
+    "../components/HostListing/PublishHostItem"
+  );
+  const { useNavigate } = await vi.importActual("react-router-dom");
+
+  return {
+    __esModule: true,
+    default: ({ listing, listingId, isPublished, onPublishSuccess }) => {
+      const navigate = useNavigate();
+      return (
+        <div data-testid={`host-card-${listingId}`}>
+          <p>Listing: {listing.title}</p>
+          <button onClick={() => navigate(`/host/edit/${listingId}`)}>
+            Edit listing
+          </button>
+          <PublishHostItem
+            listingId={listingId}
+            isPublished={isPublished}
+            onSuccess={onPublishSuccess}
+          />
+        </div>
+      );
+    },
+  };
+});
+
+const renderWithProviders = (ui, { store, route = "/" } = {}) =>
+  render(ui, {
+    wrapper: ({ children }) => (
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[route]}>{children}</MemoryRouter>
+      </Provider>
+    ),
+  });
+
+const createTestStore = () =>
+  configureStore({
+    reducer: {
+      auth: authReducer,
+      notification: notificationReducer,
+    },
+    preloadedState: {
+      auth: {
+        token: null,
+        user: null,
+        isAuthenticated: false,
+      },
+      notification: {
+        notifications: [],
+        seenBookings: {},
+        lastUpdated: null,
+      },
+    },
+  });
