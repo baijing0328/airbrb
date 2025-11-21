@@ -20,11 +20,6 @@ $dark-mars: #1a3635;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-  /* Fix for header layout */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 24px;
 }
 
 .listingViewLoading {
