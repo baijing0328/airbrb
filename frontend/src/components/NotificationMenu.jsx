@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Badge, Drawer, List, Button, Typography, Tooltip, Flex } from "antd";
 import { MailOutlined, CloseOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   selectNotifications,
   selectUnreadCount,
@@ -22,6 +23,7 @@ const NotificationMenu = () => {
   const user = useSelector(selectUser);
   const token = useSelector(selectToken);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Only show if logged in
   if (!user || !token) return null;
@@ -34,8 +36,21 @@ const NotificationMenu = () => {
     setVisible(false);
   };
 
-  const handleRead = (id) => {
-    dispatch(markAsRead(id));
+  const handleNotificationClick = (item) => {
+    // Mark as read first
+    if (!item.read) {
+      dispatch(markAsRead(item.id));
+    }
+
+    // Navigate based on type
+    if (item.type === 'host_request') {
+      navigate(`/host/requests/${item.listingId}`);
+    } else if (item.type === 'guest_status') {
+      navigate(`/listing/${item.listingId}`);
+    }
+
+    // Close the drawer after clicking
+    onClose();
   };
 
   const handleReadAll = () => {
@@ -82,7 +97,7 @@ const NotificationMenu = () => {
           dataSource={notifications}
           renderItem={(item) => (
             <List.Item
-              onClick={() => handleRead(item.id)}
+              onClick={() => handleNotificationClick(item)}
               style={{
                 backgroundColor: item.read ? "transparent" : theme.backgroundTiffany,
                 padding: "16px",

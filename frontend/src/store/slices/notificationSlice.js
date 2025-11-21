@@ -121,6 +121,7 @@ export const pollNotifications = () => async (dispatch, getState) => {
               message: `New booking request for "${listingTitle}" by ${booking.owner}`,
               type: "host_request",
               bookingId: booking.id,
+              listingId: booking.listingId,
             })
           );
         }
@@ -138,6 +139,7 @@ export const pollNotifications = () => async (dispatch, getState) => {
                 message: `Your booking for "${listingTitle}" has been ${newStatus}`,
                 type: "guest_status",
                 bookingId: booking.id,
+                listingId: booking.listingId,
               })
             );
           }
