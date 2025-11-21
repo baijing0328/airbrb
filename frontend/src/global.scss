@@ -1,4 +1,6 @@
-/* Global setup SCSS - allowed per project requirements for body style overwrites */
+/* Global setup SCSS - allowed per project requirements for body style overwrites and UI library CSS */
+
+// Body style reset
 body {
   margin: 0;
   padding: 0;
@@ -10,4 +12,7 @@ body {
 *::after {
   box-sizing: inherit;
 }
+
+// UI Library CSS - Leaflet (required for react-leaflet map component)
+@import "leaflet/dist/leaflet.css";
 
