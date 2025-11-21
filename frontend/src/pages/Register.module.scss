@@ -1,17 +1,10 @@
-// Global reset for login page
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
-
-// Login page layout
-.login-layout {
+// Register page layout
+.register-layout {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0abab5 0%, #81d8d0 100%);
 }
 
-.login-content {
+.register-content {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,8 +12,8 @@ body {
   min-height: 100vh;
 }
 
-// Login card
-.login-card {
+// Register card
+.register-card {
   width: 100%;
   max-width: 450px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -28,7 +21,7 @@ body {
 }
 
 // Header section
-.login-header {
+.register-header {
   text-align: center;
   margin-bottom: 30px;
 
@@ -38,7 +31,7 @@ body {
 }
 
 // Form styling
-.login-form {
+.register-form {
   &__submit-button {
     height: 45px;
     font-size: 16px;
@@ -50,11 +43,12 @@ body {
 }
 
 // Footer section
-.login-footer {
+.register-footer {
   text-align: center;
   margin-top: 16px;
 
-  &__signup-link {
+  &__signin-link {
     padding: 0;
   }
 }
+

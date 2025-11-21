@@ -5,7 +5,7 @@ import { useAppDispatch } from "../store/hooks";
 import { setCredentials } from "../store/slices/authSlice";
 import { registerAPI } from "../services/authService";
 import { theme } from "../utils/utils";
-import "./Register.scss";
+import styles from "./Register.module.scss";
 
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
@@ -44,11 +44,11 @@ const Register = () => {
   };
 
   return (
-    <Layout className="register-layout">
-      <Content className="register-content">
-        <Card className="register-card">
-          <div className="register-header">
-            <Title level={2} className="register-header__title">
+    <Layout className={styles["register-layout"]}>
+      <Content className={styles["register-content"]}>
+        <Card className={styles["register-card"]}>
+          <div className={styles["register-header"]}>
+            <Title level={2} className={styles["register-header__title"]}>
               Create Account
             </Title>
             <Typography.Text type="secondary">
@@ -126,12 +126,12 @@ const Register = () => {
               />
             </Form.Item>
 
-            <Form.Item className="register-form__submit-item">
+            <Form.Item className={styles["register-form__submit-item"]}>
               <Button
                 type="default"
                 htmlType="submit"
                 block
-                className="register-form__submit-button"
+                className={styles["register-form__submit-button"]}
                 style={{
                   backgroundColor: theme.kleinBlue,
                   borderColor: theme.kleinBlue,
@@ -142,13 +142,13 @@ const Register = () => {
               </Button>
             </Form.Item>
 
-            <div className="register-footer">
+            <div className={styles["register-footer"]}>
               <Typography.Text type="secondary">
                 Already have an account?{" "}
               </Typography.Text>
               <Button
                 type="link"
-                className="register-footer__signin-link"
+                className={styles["register-footer__signin-link"]}
                 onClick={handleSignIn}
               >
                 Sign In

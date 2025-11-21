@@ -5,7 +5,7 @@ import { useAppDispatch } from "../store/hooks";
 import { setCredentials } from "../store/slices/authSlice";
 import { loginAPI } from "../services/authService";
 import { theme } from "../utils/utils";
-import "./Login.scss";
+import styles from "./Login.module.scss";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -39,11 +39,11 @@ const Login = () => {
   };
 
   return (
-    <Layout className="login-layout">
-      <Content className="login-content">
-        <Card className="login-card">
-          <div className="login-header">
-            <Title level={2} className="login-header__title">
+    <Layout className={styles["login-layout"]}>
+      <Content className={styles["login-content"]}>
+        <Card className={styles["login-card"]}>
+          <div className={styles["login-header"]}>
+            <Title level={2} className={styles["login-header__title"]}>
               Welcome Back
             </Title>
             <Typography.Text type="secondary">
@@ -85,12 +85,12 @@ const Login = () => {
               />
             </Form.Item>
 
-            <Form.Item className="login-form__submit-item">
+            <Form.Item className={styles["login-form__submit-item"]}>
               <Button
                 type="default"
                 htmlType="submit"
                 block
-                className="login-form__submit-button"
+                className={styles["login-form__submit-button"]}
                 style={{
                   backgroundColor: theme.kleinBlue,
                   borderColor: theme.kleinBlue,
@@ -101,13 +101,13 @@ const Login = () => {
               </Button>
             </Form.Item>
 
-            <div className="login-footer">
+            <div className={styles["login-footer"]}>
               <Typography.Text type="secondary">
                 Don&apos;t have an account?{" "}
               </Typography.Text>
               <Button
                 type="link"
-                className="login-footer__signup-link"
+                className={styles["login-footer__signup-link"]}
                 onClick={handleSignUp}
               >
                 Sign Up
