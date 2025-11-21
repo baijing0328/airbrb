@@ -20,6 +20,29 @@ $dark-mars: #1a3635;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+
+  :global(.host-header__left) {
+    display: flex;
+    align-items: center;
+  }
+
+  :global(.host-header__title) {
+    margin: 0 !important;
+    color: #2d5f5d; /* mars-green */
+  }
+
+  :global(.host-header__right) {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .listingViewLoading {
@@ -108,8 +131,8 @@ $dark-mars: #1a3635;
 .listingViewMedia {
   border-radius: 28px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(129, 216, 208, 0.5);
+  box-shadow: 0 8px 24px rgba(26, 54, 53, 0.08);
 }
 
 .listingViewMediaGrid {
@@ -122,6 +145,7 @@ $dark-mars: #1a3635;
   border-radius: 18px;
   overflow: hidden;
   height: 220px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
   &:global(.listing-view__media-item--0) {
     grid-column: span 2;
@@ -156,14 +180,19 @@ $dark-mars: #1a3635;
 
 .listingViewCard {
   border-radius: 24px;
-  border: none;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(45, 95, 93, 0.12);
+  box-shadow: 0 6px 16px rgba(26, 54, 53, 0.06);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 10px 24px rgba(26, 54, 53, 0.1);
+    border-color: rgba(129, 216, 208, 0.6);
+  }
 }
 
 .listingViewCardGlass {
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  backdrop-filter: blur(6px);
+  background: #fff;
+  backdrop-filter: none; // Removed blur for clearer card look as requested
 }
 
 .listingViewBookingForm {
