@@ -30,6 +30,7 @@ const LogoutBtn = () => {
           type="default"
           icon={<LoginOutlined />}
           shape="circle"
+          aria-label="Login"
           style={{
             backgroundColor: theme.kleinBlue,
             borderColor: theme.kleinBlue,
@@ -47,6 +48,7 @@ const LogoutBtn = () => {
         type="default"
         icon={<LogoutOutlined />}
         shape="circle"
+        aria-label="Logout"
         style={{
           backgroundColor: theme.kleinBlue,
           borderColor: theme.kleinBlue,

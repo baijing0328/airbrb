@@ -29,6 +29,12 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+
 import {
   getListing,
   putListingReview,
@@ -565,7 +571,7 @@ const ListingView = () => {
                     <Tooltip
                       title={renderRatingTooltip()}
                       placement="bottomLeft"
-                      overlayClassName={styles['listingViewTooltip']}
+                      classNames={{ root: styles['listingViewTooltip'] }}
                     >
                       <Flex
                         align="center"
