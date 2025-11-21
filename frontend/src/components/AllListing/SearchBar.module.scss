@@ -1,0 +1,187 @@
+@use "sass:color";
+
+$tiffany-blue: #81d8d0;
+$mars-green: #2d5f5d;
+$light-tiffany: #b3e5e0;
+$dark-mars: #1a3635;
+
+.searchCard {
+  margin-bottom: 24px;
+  border-radius: 20px !important;
+  border: 1px solid rgba($light-tiffany, 0.8);
+  background: linear-gradient(135deg, #ffffff 0%, #f6fbfb 100%);
+  box-shadow: 0 18px 40px rgba(45, 95, 93, 0.08);
+
+  :global(.ant-card-body) {
+    padding: 20px 28px;
+  }
+}
+
+.searchCardForm {
+  width: 100%;
+  align-items: stretch;
+  gap: 20px;
+}
+
+.searchCardField {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 220px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  transition: background 0.3s ease, border-color 0.3s ease;
+
+  &:global(.grow) {
+    flex: 1;
+    min-width: 260px;
+  }
+
+  &:focus-within {
+    background: rgba($tiffany-blue, 0.12);
+  }
+}
+
+.searchCardLabel {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba($dark-mars, 0.6);
+  margin-bottom: 2px;
+}
+
+.searchCardInput {
+  border: none;
+  padding-left: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: $dark-mars;
+  background: transparent;
+
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+.searchCardDate {
+  border: none;
+  background: transparent;
+  padding: 0;
+  height: auto;
+
+  :global(.ant-picker-input > input) {
+    font-weight: 500;
+    color: $dark-mars;
+  }
+
+  &,
+  &:hover,
+  &:focus {
+    border: none;
+    box-shadow: none;
+  }
+}
+
+.searchCardDivider {
+  width: 1px;
+  height: 48px;
+  background: rgba($dark-mars, 0.08);
+}
+
+.searchCardActions {
+  margin-left: auto;
+}
+
+.searchCardFilterBtn,
+.searchCardSearchBtn {
+  border-radius: 999px;
+  padding: 0 20px;
+  height: 44px;
+  font-weight: 600;
+}
+
+.searchCardFilterBtn {
+  border-color: rgba($tiffany-blue, 0.5);
+  color: $mars-green;
+  background: #fff;
+
+  &:hover,
+  &:focus {
+    border-color: $tiffany-blue;
+    color: $dark-mars;
+  }
+}
+
+.searchCardSearchBtn {
+  border: none;
+  background: $mars-green;
+  box-shadow: 0 15px 25px rgba($mars-green, 0.25);
+
+  &:hover,
+  &:focus {
+    background: color.adjust($mars-green, $lightness: -5%);
+  }
+
+  :global(.anticon) {
+    font-size: 16px;
+  }
+}
+
+.searchCardClearBtn {
+  padding: 0 8px;
+  height: 44px;
+  color: $mars-green;
+  font-weight: 500;
+
+  &:hover {
+    color: $dark-mars;
+  }
+}
+
+.searchFilterModal {
+  :global(.ant-modal-content) {
+    border-radius: 22px;
+    padding: 20px 32px 32px;
+    background: linear-gradient(
+      145deg,
+      #ffffff 0%,
+      rgba($tiffany-blue, 0.08) 100%
+    );
+    border: 1px solid rgba($tiffany-blue, 0.4);
+    box-shadow: 0 35px 60px rgba($dark-mars, 0.18);
+  }
+
+  :global(.ant-modal-header) {
+    border-bottom: none;
+    border-radius: 20px 20px 0 0;
+    background: transparent;
+  }
+
+  :global(.ant-modal-title) {
+    font-weight: 700;
+    color: $dark-mars;
+    letter-spacing: 0.03em;
+  }
+
+  :global(.ant-modal-footer) {
+    border-top: none;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 4px 8px;
+  }
+
+  :global(.ant-btn) {
+    border-radius: 999px;
+    height: 40px;
+    font-weight: 600;
+  }
+}
+
+.searchFilterModalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
