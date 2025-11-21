@@ -38,6 +38,7 @@ import { useAppSelector } from "../../store/hooks";
 import { theme } from "../../utils/utils";
 import LogoutBtn from "../../components/LogoutBtn";
 import NotificationMenu from "../../components/NotificationMenu";
+import LocationMap from "../../components/LocationMap";
 import bedroomIcon from "../../assets/bedroom.svg";
 import bedIcon from "../../assets/bed.svg";
 import bathroomIcon from "../../assets/bathroom.svg";
@@ -790,41 +791,9 @@ const ListingView = () => {
               <Flex gap="large" wrap="wrap">
                 <Card
                   className="listing-view__card listing-view__card--glass"
-                  title="Quick facts"
-                  variant="borderless"
-                >
-                  <Flex gap={24} wrap="wrap">
-                    <div className="listing-view__stat">
-                      <img
-                        src={bedroomIcon}
-                        alt="Bedrooms"
-                        className="listing-view__stat-icon"
-                      />
-                      <Text>{bedroomCount} bedrooms</Text>
-                    </div>
-                    <div className="listing-view__stat">
-                      <img
-                        src={bedIcon}
-                        alt="Beds"
-                        className="listing-view__stat-icon"
-                      />
-                      <Text>{bedCount} beds</Text>
-                    </div>
-                    <div className="listing-view__stat">
-                      <img
-                        src={bathroomIcon}
-                        alt="Bathrooms"
-                        className="listing-view__stat-icon"
-                      />
-                      <Text>{bathrooms} bathrooms</Text>
-                    </div>
-                  </Flex>
-                </Card>
-
-                <Card
-                  className="listing-view__card listing-view__card--glass"
                   title="Amenities"
                   variant="borderless"
+                  style={{ width: '100%' }}
                 >
                   {amenities.length ? (
                     <Flex gap="small" wrap="wrap">
@@ -843,6 +812,24 @@ const ListingView = () => {
                   )}
                 </Card>
               </Flex>
+
+              <Card
+                className="listing-view__card listing-view__card--glass"
+                title="Location"
+                variant="borderless"
+              >
+                <div style={{ height: "400px", width: "100%" }}>
+                  <LocationMap
+                    lat={listing.address?.lat}
+                    lon={listing.address?.lon}
+                    address={
+                      typeof listing.address === "object"
+                        ? listing.address.formatted
+                        : listing.address
+                    }
+                  />
+                </div>
+              </Card>
 
               <Card
                 className="listing-view__card listing-view__card--glass"
