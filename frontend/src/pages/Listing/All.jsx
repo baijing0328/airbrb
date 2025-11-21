@@ -170,6 +170,7 @@ const All = () => {
             const parts = [
               address.street,
               address.city,
+              address.suburb,
               address.state,
               address.postcode,
               address.country,
@@ -177,7 +178,22 @@ const All = () => {
             addressStr = parts.join(" ").toLowerCase();
           }
 
-          return title.includes(searchText) || addressStr.includes(searchText);
+          // Check against detailed location metadata if available
+          let matchesLocation = false;
+          const loc = l.details?.metadata?.location;
+          if (loc) {
+            const locationParts = [
+              loc.city,
+              loc.suburb,
+              loc.state,
+              loc.country,
+              loc.postcode
+            ].filter(Boolean).map(s => s.toLowerCase());
+            
+            matchesLocation = locationParts.some(part => part.includes(searchText));
+          }
+
+          return title.includes(searchText) || addressStr.includes(searchText) || matchesLocation;
         });
       }
 
