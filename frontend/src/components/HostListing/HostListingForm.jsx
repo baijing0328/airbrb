@@ -161,6 +161,23 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
       setSaving(true);
       const params = await formatFormData(values);
 
+      // Extract detailed location info if available
+      // The 'address' field might be an object from AddressAutocomplete or just a string
+      if (typeof values.address === 'object' && values.address !== null) {
+        if (!params.metadata) {
+          params.metadata = {};
+        }
+        params.metadata.location = {
+          city: values.address.city,
+          state: values.address.state,
+          country: values.address.country,
+          suburb: values.address.suburb,
+          postcode: values.address.postcode,
+          lat: values.address.lat,
+          lon: values.address.lon,
+        };
+      }
+
       // Add property images to metadata
       if (!params.metadata) {
         params.metadata = {};
