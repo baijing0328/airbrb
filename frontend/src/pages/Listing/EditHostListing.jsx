@@ -3,6 +3,7 @@ import { Layout, Typography, Button, Card } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import HostListingForm from "../../components/HostListing/HostListingForm";
 import LogoutBtn from "../../components/LogoutBtn";
+import NotificationMenu from "../../components/NotificationMenu";
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -39,7 +40,10 @@ const EditHostListing = () => {
             Edit Listing
           </Title>
         </div>
-        <LogoutBtn />
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <NotificationMenu />
+          <LogoutBtn />
+        </div>
       </Header>
 
       <Content style={{ padding: "24px", background: "#f5f5f5" }}>

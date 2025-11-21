@@ -1,6 +1,6 @@
-import React from "react";
-import { Badge, Popover, List, Button, Typography } from "antd";
-import { BellOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import { Badge, Drawer, List, Button, Typography, Tooltip } from "antd";
+import { MailOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectNotifications,
@@ -10,11 +10,13 @@ import {
 } from "../store/slices/notificationSlice";
 import { selectUser, selectToken } from "../store/slices/authSlice";
 import { useNotifications } from "../hooks/useNotifications";
+import { theme } from "../utils/utils";
 
 const NotificationMenu = () => {
   // Start polling
   useNotifications();
 
+  const [visible, setVisible] = useState(false);
   const notifications = useSelector(selectNotifications);
   const unreadCount = useSelector(selectUnreadCount);
   const user = useSelector(selectUser);
@@ -24,6 +26,14 @@ const NotificationMenu = () => {
   // Only show if logged in
   if (!user || !token) return null;
 
+  const showDrawer = () => {
+    setVisible(true);
+  };
+
+  const onClose = () => {
+    setVisible(false);
+  };
+
   const handleRead = (id) => {
     dispatch(markAsRead(id));
   };
@@ -32,30 +42,51 @@ const NotificationMenu = () => {
     dispatch(markAllAsRead());
   };
 
-  const content = (
-    <div style={{ width: 300, maxHeight: 400, overflowY: "auto" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "8px 12px",
-          borderBottom: "1px solid #f0f0f0",
-        }}
-      >
-        <Typography.Text strong>Notifications</Typography.Text>
-        {notifications.length > 0 && (
+  return (
+    <>
+      {/* Use a portal or fixed position for the bell/mail icon if it's global, 
+          but here we assume it's placed in the header. 
+          If it needs to be floating, we can keep the fixed styles.
+          Based on requirement "顶部有一个收件箱", we might want to return just the button 
+          and let the parent place it in the header. 
+          However, if this component is responsible for placement, we can use fixed positioning 
+          or expect it to be rendered inside the header. 
+          
+          Let's assume this component is rendered IN the header.
+      */}
+       <Tooltip title="Notifications">
+        <Badge count={unreadCount} overflowCount={99} size="small">
           <Button
-            type="link"
-            size="small"
-            onClick={handleReadAll}
-            style={{ padding: 0 }}
-          >
-            Mark all read
-          </Button>
-        )}
-      </div>
-      <List
+            type="default"
+            icon={<MailOutlined />}
+            shape="circle"
+            onClick={showDrawer}
+            style={{
+              backgroundColor: theme.kleinBlue,
+              borderColor: theme.kleinBlue,
+              color: "#fff",
+            }}
+          />
+        </Badge>
+      </Tooltip>
+
+      <Drawer
+        title={
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>Inbox</span>
+             {notifications.length > 0 && (
+              <Button type="link" onClick={handleReadAll}>
+                Mark all read
+              </Button>
+            )}
+          </div>
+        }
+        placement="right"
+        onClose={onClose}
+        open={visible}
+        width={350}
+      >
+        <List
         dataSource={notifications}
         renderItem={(item) => (
           <List.Item
@@ -63,45 +94,37 @@ const NotificationMenu = () => {
             style={{
               background: item.read ? "transparent" : "#e6f7ff",
               cursor: "pointer",
-              padding: "12px",
+              padding: "16px",
               borderBottom: "1px solid #f0f0f0",
               transition: "background 0.3s",
+              flexDirection: 'column',
+              alignItems: 'flex-start'
             }}
             className="notification-item"
           >
-            <List.Item.Meta
-              title={
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+            <div style={{ display: "flex", justifyContent: "space-between", width: '100%', marginBottom: '8px' }}>
+                <Typography.Text
+                strong={!item.read}
+                style={{ fontSize: "14px" }}
                 >
-                  <Typography.Text
-                    strong={!item.read}
-                    style={{ fontSize: "14px" }}
-                  >
-                    {item.type === "host_request"
-                      ? "New Request"
-                      : "Booking Update"}
-                  </Typography.Text>
-                  {!item.read && <Badge status="processing" />}
-                </div>
-              }
-              description={
-                <div>
-                  <div style={{ color: "#555", fontSize: "12px" }}>
-                    {item.message}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "10px",
-                      color: "#999",
-                      marginTop: "4px",
-                    }}
-                  >
-                    {new Date(item.timestamp).toLocaleString()}
-                  </div>
-                </div>
-              }
-            />
+                {item.type === "host_request"
+                    ? "New Request"
+                    : "Booking Update"}
+                </Typography.Text>
+                {!item.read && <Badge status="processing" />}
+            </div>
+            
+            <div style={{ color: "#555", fontSize: "13px", marginBottom: '8px' }}>
+                {item.message}
+            </div>
+            <div
+                style={{
+                    fontSize: "11px",
+                    color: "#999",
+                }}
+            >
+                {new Date(item.timestamp).toLocaleString()}
+            </div>
           </List.Item>
         )}
         locale={{
@@ -114,38 +137,10 @@ const NotificationMenu = () => {
           ),
         }}
       />
-    </div>
-  );
-
-  return (
-    <div
-      style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 2000 }}
-    >
-      <Popover
-        content={content}
-        title={null}
-        trigger="click"
-        placement="topRight"
-      >
-        <Badge count={unreadCount} overflowCount={99}>
-          <Button
-            shape="circle"
-            icon={<BellOutlined style={{ fontSize: "20px" }} />}
-            size="large"
-            type="primary"
-            style={{
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-              width: "50px",
-              height: "50px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          />
-        </Badge>
-      </Popover>
-    </div>
+      </Drawer>
+    </>
   );
 };
 
 export default NotificationMenu;
+

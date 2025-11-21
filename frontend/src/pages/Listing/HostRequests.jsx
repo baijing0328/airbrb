@@ -23,6 +23,8 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
+import NotificationMenu from "../../components/NotificationMenu";
+import LogoutBtn from "../../components/LogoutBtn";
 import { getListing } from "../../services/listingManageService";
 import {
   getBookings,
@@ -218,13 +220,17 @@ const HostRequests = () => {
           </Title>
         </div>
         <div className="host-header__right">
-          <Button
-            type="default"
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate("/host")}
-          >
-            Back to listings
-          </Button>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <Button
+              type="default"
+              icon={<ArrowLeftOutlined />}
+              onClick={() => navigate("/host")}
+            >
+              Back to listings
+            </Button>
+            <NotificationMenu />
+            <LogoutBtn />
+          </div>
         </div>
       </Header>
       <Content className="host-content">

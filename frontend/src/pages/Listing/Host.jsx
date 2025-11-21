@@ -4,6 +4,7 @@ import { UnorderedListOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import LogoutBtn from "../../components/LogoutBtn";
+import NotificationMenu from "../../components/NotificationMenu";
 import HostItem from "../../components/HostListing/HostItem";
 import CreateHostForm from "../../components/HostListing/CreateHostForm";
 import ProfitChart from "../../components/ProfitChart";
@@ -138,6 +139,7 @@ const Host = () => {
             All Listings
           </Button>
           <CreateHostForm onSuccess={fetchListingsAndBookings} />
+          <NotificationMenu />
           <LogoutBtn />
         </div>
       </Header>

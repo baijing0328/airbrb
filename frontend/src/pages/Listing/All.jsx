@@ -12,6 +12,7 @@ import {
 import { HomeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import LogoutBtn from "../../components/LogoutBtn";
+import NotificationMenu from "../../components/NotificationMenu";
 import HostItem from "../../components/HostListing/HostItem";
 import SearchBar from "../../components/AllListing/SearchBar";
 import { getListings, getListing } from "../../services/listingManageService";
@@ -310,6 +311,7 @@ const All = () => {
           <Button type="default" icon={<HomeOutlined />} onClick={handleToggle}>
             My Listings
           </Button>
+          <NotificationMenu />
           <LogoutBtn />
         </div>
       </Header>

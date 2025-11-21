@@ -3,6 +3,7 @@ import { LogoutOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store/hooks";
 import { logout as logoutAction } from "../store/slices/authSlice";
+import { clearNotifications } from "../store/slices/notificationSlice";
 import { logoutAPI } from "../services/authService";
 import { theme } from "../utils/utils";
 
@@ -14,6 +15,7 @@ const LogoutBtn = () => {
     try {
       await logoutAPI();
       dispatch(logoutAction());
+      dispatch(clearNotifications());
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);

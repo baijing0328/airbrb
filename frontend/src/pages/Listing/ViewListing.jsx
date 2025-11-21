@@ -37,6 +37,7 @@ import { getBookings, newBooking } from "../../services/bookingService";
 import { useAppSelector } from "../../store/hooks";
 import { theme } from "../../utils/utils";
 import LogoutBtn from "../../components/LogoutBtn";
+import NotificationMenu from "../../components/NotificationMenu";
 import bedroomIcon from "../../assets/bedroom.svg";
 import bedIcon from "../../assets/bed.svg";
 import bathroomIcon from "../../assets/bathroom.svg";
@@ -490,6 +491,7 @@ const ListingView = () => {
           >
             Back
           </Button>
+          <NotificationMenu />
           <LogoutBtn />
         </Flex>
       </Header>

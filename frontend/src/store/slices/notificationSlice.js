@@ -13,6 +13,11 @@ const notificationSlice = createSlice({
   name: "notification",
   initialState,
   reducers: {
+    clearNotifications: (state) => {
+      state.notifications = [];
+      state.seenBookings = {};
+      state.lastUpdated = null;
+    },
     addNotification: (state, action) => {
       state.notifications.unshift({
         ...action.payload,
@@ -52,6 +57,7 @@ const notificationSlice = createSlice({
 });
 
 export const {
+  clearNotifications,
   addNotification,
   markAsRead,
   markAllAsRead,
@@ -84,9 +90,13 @@ export const pollNotifications = () => async (dispatch, getState) => {
     const allListings = listingsRes.listings || [];
     const allBookings = bookingsRes.bookings || [];
 
+    // Debugging logs (can remove later)
+    // console.log("Polling...", { userEmail: user.email, allBookingsCount: allBookings.length });
+
     // Identify my listings (Host)
+    // Ensure ID types match (convert to string for comparison)
     const myListings = allListings.filter((l) => l.owner === user.email);
-    const myListingIds = new Set(myListings.map((l) => l.id));
+    const myListingIds = new Set(myListings.map((l) => String(l.id)));
 
     // First load
     if (!lastUpdated) {
@@ -97,14 +107,15 @@ export const pollNotifications = () => async (dispatch, getState) => {
     allBookings.forEach((booking) => {
       const oldStatus = seenBookings[booking.id];
       const newStatus = booking.status;
+      const bookingListingId = String(booking.listingId);
 
       // Host Logic: New booking request on my listing
-      if (myListingIds.has(booking.listingId)) {
+      if (myListingIds.has(bookingListingId)) {
         // If we never saw this booking ID before, and it is pending -> Notification
         if (!oldStatus && newStatus === "pending") {
           const listingTitle =
-            myListings.find((l) => l.id === booking.listingId)?.title ||
-            booking.listingId;
+            myListings.find((l) => String(l.id) === bookingListingId)?.title ||
+            bookingListingId;
           dispatch(
             addNotification({
               message: `New booking request for "${listingTitle}" by ${booking.owner}`,
@@ -120,8 +131,8 @@ export const pollNotifications = () => async (dispatch, getState) => {
         if (oldStatus && oldStatus !== newStatus) {
           if (newStatus === "accepted" || newStatus === "declined") {
             const listingTitle =
-              allListings.find((l) => l.id === booking.listingId)?.title ||
-              booking.listingId;
+              allListings.find((l) => String(l.id) === bookingListingId)?.title ||
+              bookingListingId;
             dispatch(
               addNotification({
                 message: `Your booking for "${listingTitle}" has been ${newStatus}`,
