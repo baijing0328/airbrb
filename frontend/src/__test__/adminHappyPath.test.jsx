@@ -441,3 +441,203 @@ const createTestStore = () =>
       },
     },
   });
+
+describe("Admin happy path UI flow", () => {
+  const admin = {
+    name: "Admin Tester",
+    email: "admin@example.com",
+    password: "S3cret!Pass",
+  };
+  beforeEach(() => {
+    resetBackendState();
+    localStorage.clear();
+    mockNavigate.mockClear();
+    registerAPIMock.mockClear();
+    loginAPIMock.mockClear();
+    logoutAPIMock.mockClear();
+    newListingMock.mockClear();
+    updateListingMock.mockClear();
+    publishListingMock.mockClear();
+    unpublishListingMock.mockClear();
+    newBookingMock.mockClear();
+    getListingsMock.mockClear();
+    getListingMock.mockClear();
+    getBookingsMock.mockClear();
+    messageSpy.success.mockClear();
+    messageSpy.error.mockClear();
+    messageSpy.warning.mockClear();
+  });
+  it("registers, manages listings, books, and logs back in", async () => {
+    const store = createTestStore();
+    // Step 1: Register
+    renderWithProviders(
+      <Routes>
+        <Route path="/register" element={<Register />} />
+      </Routes>,
+      { store, route: "/register" }
+    );
+    fireEvent.change(screen.getByLabelText(/name/i), {
+      target: { value: admin.name },
+    });
+    fireEvent.change(screen.getByLabelText(/^email/i), {
+      target: { value: admin.email },
+    });
+    fireEvent.change(screen.getByLabelText(/^password$/i), {
+      target: { value: admin.password },
+    });
+    fireEvent.change(screen.getByLabelText(/confirm password/i), {
+      target: { value: admin.password },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
+    await waitFor(() =>
+      expect(registerAPIMock).toHaveBeenCalledWith(
+        admin.email,
+        admin.password,
+        admin.name
+      )
+    );
+    expect(store.getState().auth.isAuthenticated).toBe(true);
+    expect(mockNavigate).toHaveBeenCalledWith("/all");
+    cleanup();
+    // Step 2: Create listing on host page
+    const initialTitle = "Harbour Hideaway";
+    const initialThumbnail = "https://example.com/harbour.png";
+    renderWithProviders(
+      <Routes>
+        <Route path="/host" element={<Host />} />
+      </Routes>,
+      { store, route: "/host" }
+    );
+    await screen.findByText(/Past 30 Days Profit/i);
+    fireEvent.click(
+      screen.getByRole("button", { name: /create new listing/i })
+    );
+    fireEvent.change(screen.getByLabelText(/listing title/i), {
+      target: { value: initialTitle },
+    });
+    fireEvent.change(screen.getByLabelText(/thumbnail url/i), {
+      target: { value: initialThumbnail },
+    });
+    fireEvent.click(screen.getByText(/create listing/i));
+    await waitFor(() => expect(newListingMock).toHaveBeenCalled());
+    expect(
+      await screen.findByText(`Listing: ${initialTitle}`)
+    ).toBeInTheDocument();
+    const listingId = backendState.listings[0].id;
+    cleanup();
+    // Step 3: Update listing via edit page
+    const updatedTitle = "Ocean Retreat";
+    const updatedThumbnail = "https://example.com/ocean.png";
+
+    renderWithProviders(
+      <Routes>
+        <Route path="/host/edit/:listingId" element={<EditHostListing />} />
+      </Routes>,
+      { store, route: `/host/edit/${listingId}` }
+    );
+    await screen.findByDisplayValue(initialTitle);
+
+    fireEvent.change(screen.getByLabelText(/listing title/i), {
+      target: { value: updatedTitle },
+    });
+    fireEvent.change(screen.getByLabelText(/thumbnail url/i), {
+      target: { value: updatedThumbnail },
+    });
+    fireEvent.click(screen.getByText(/save changes/i));
+
+    await waitFor(() =>
+      expect(updateListingMock).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything()
+      )
+    );
+    expect(mockNavigate).toHaveBeenCalledWith("/host");
+
+    cleanup();
+
+    // Step 4 & 5: Publish then unpublish listing
+    renderWithProviders(
+      <Routes>
+        <Route path="/host" element={<Host />} />
+      </Routes>,
+      { store, route: "/host" }
+    );
+
+    await screen.findByText(`Listing: ${updatedTitle}`);
+
+    fireEvent.click(screen.getByRole("button", { name: /publish listing/i }));
+    await waitFor(() =>
+      expect(publishListingMock).toHaveBeenCalledWith(
+        listingId,
+        availabilityWindow
+      )
+    );
+    expect(
+      await screen.findByRole("button", { name: /unpublish listing/i })
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /unpublish listing/i }));
+    await waitFor(() =>
+      expect(unpublishListingMock).toHaveBeenCalledWith(listingId)
+    );
+
+    // Re-publish to make booking possible in the next step
+    fireEvent.click(screen.getByRole("button", { name: /publish listing/i }));
+    await waitFor(() => expect(publishListingMock).toHaveBeenCalledTimes(2));
+
+    cleanup();
+
+    // Step 6: Make booking as guest on listing view
+    renderWithProviders(
+      <Routes>
+        <Route path="/listing/:listingId" element={<ListingView />} />
+      </Routes>,
+      { store, route: `/listing/${listingId}` }
+    );
+    await screen.findByText(updatedTitle);
+    fireEvent.change(screen.getByLabelText(/start date/i), {
+      target: { value: availabilityWindow[0].start },
+    });
+    fireEvent.change(screen.getByLabelText(/end date/i), {
+      target: { value: availabilityWindow[0].end },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /request booking/i }));
+    await waitFor(() =>
+      expect(newBookingMock).toHaveBeenCalledWith(
+        String(listingId),
+        expect.objectContaining({
+          dateRange: expect.any(Object),
+        })
+      )
+    );
+    expect(messageSpy.success).toHaveBeenCalledWith(
+      "Booking request submitted!"
+    );
+    cleanup();
+    // Step 7: Logout
+    renderWithProviders(<LogoutBtn />, { store });
+    fireEvent.click(screen.getByRole("button", { name: /logout/i }));
+    await waitFor(() => expect(logoutAPIMock).toHaveBeenCalled());
+    expect(store.getState().auth.isAuthenticated).toBe(false);
+    cleanup();
+    // Step 8: Login again
+    renderWithProviders(
+      <Routes>
+        <Route path="/login" element={<Login />} />
+      </Routes>,
+      { store, route: "/login" }
+    );
+    fireEvent.change(screen.getByLabelText(/^email/i), {
+      target: { value: admin.email },
+    });
+    fireEvent.change(screen.getByLabelText(/^password/i), {
+      target: { value: admin.password },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    await waitFor(() =>
+      expect(loginAPIMock).toHaveBeenCalledWith(admin.email, admin.password)
+    );
+    expect(store.getState().auth.isAuthenticated).toBe(true);
+    expect(mockNavigate).toHaveBeenCalledWith("/all");
+  }, 20000);
+});
