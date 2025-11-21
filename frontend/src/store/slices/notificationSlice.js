@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getBookings } from '../../services/bookingService';
-import { getListings } from '../../services/listingManageService';
-import { selectUser } from './authSlice';
+import { getBookings } from "../../services/bookingService";
+import { getListings } from "../../services/listingManageService";
+import { selectUser } from "./authSlice";
 
 const initialState = {
   notifications: [], // { id, message, type, read, timestamp, bookingId, link }
@@ -78,15 +78,15 @@ export const pollNotifications = () => async (dispatch, getState) => {
     // Parallel fetch
     const [listingsRes, bookingsRes] = await Promise.all([
       getListings(),
-      getBookings()
+      getBookings(),
     ]);
 
     const allListings = listingsRes.listings || [];
     const allBookings = bookingsRes.bookings || [];
 
     // Identify my listings (Host)
-    const myListings = allListings.filter(l => l.owner === user.email);
-    const myListingIds = new Set(myListings.map(l => l.id));
+    const myListings = allListings.filter((l) => l.owner === user.email);
+    const myListingIds = new Set(myListings.map((l) => l.id));
 
     // First load
     if (!lastUpdated) {
@@ -94,43 +94,52 @@ export const pollNotifications = () => async (dispatch, getState) => {
       return;
     }
 
-    allBookings.forEach(booking => {
+    allBookings.forEach((booking) => {
       const oldStatus = seenBookings[booking.id];
       const newStatus = booking.status;
 
       // Host Logic: New booking request on my listing
       if (myListingIds.has(booking.listingId)) {
-         // If we never saw this booking ID before, and it is pending -> Notification
-         if (!oldStatus && newStatus === 'pending') {
-             const listingTitle = myListings.find(l => l.id === booking.listingId)?.title || booking.listingId;
-            dispatch(addNotification({
+        // If we never saw this booking ID before, and it is pending -> Notification
+        if (!oldStatus && newStatus === "pending") {
+          const listingTitle =
+            myListings.find((l) => l.id === booking.listingId)?.title ||
+            booking.listingId;
+          dispatch(
+            addNotification({
               message: `New booking request for "${listingTitle}" by ${booking.owner}`,
-              type: 'host_request',
+              type: "host_request",
               bookingId: booking.id,
-            }));
-         }
+            })
+          );
+        }
       }
 
       // Guest Logic: Status change on my booking
       if (booking.owner === user.email) {
         if (oldStatus && oldStatus !== newStatus) {
-          if (newStatus === 'accepted' || newStatus === 'declined') {
-            const listingTitle = allListings.find(l => l.id === booking.listingId)?.title || booking.listingId;
-            dispatch(addNotification({
-              message: `Your booking for "${listingTitle}" has been ${newStatus}`,
-              type: 'guest_status',
-              bookingId: booking.id,
-            }));
+          if (newStatus === "accepted" || newStatus === "declined") {
+            const listingTitle =
+              allListings.find((l) => l.id === booking.listingId)?.title ||
+              booking.listingId;
+            dispatch(
+              addNotification({
+                message: `Your booking for "${listingTitle}" has been ${newStatus}`,
+                type: "guest_status",
+                bookingId: booking.id,
+              })
+            );
           }
         }
       }
 
       // Update known status if changed or new
       if (oldStatus !== newStatus) {
-        dispatch(updateSeenBookingStatus({ bookingId: booking.id, status: newStatus }));
+        dispatch(
+          updateSeenBookingStatus({ bookingId: booking.id, status: newStatus })
+        );
       }
     });
-
   } catch (error) {
     // Silent fail usually, or log
     console.error("Polling error", error);

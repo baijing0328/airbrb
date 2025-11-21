@@ -29,7 +29,7 @@ const Host = () => {
 
   const calculateProfitData = (bookings, ownedListingIds) => {
     const thirtyDaysAgo = dayjs().subtract(30, "day").startOf("day");
-    
+
     // Initialize a map for daily profits { 'YYYY-MM-DD': profit }
     const dailyProfits = new Map();
     for (let i = 0; i <= 30; i++) {
@@ -56,7 +56,8 @@ const Host = () => {
 
         for (let i = 0; i < duration; i++) {
           const currentDate = bookingStart.add(i, "day");
-          if (currentDate.isAfter(thirtyDaysAgo.subtract(1, 'day'))) { // Include today
+          if (currentDate.isAfter(thirtyDaysAgo.subtract(1, "day"))) {
+            // Include today
             const dateStr = currentDate.format("YYYY-MM-DD");
             if (dailyProfits.has(dateStr)) {
               dailyProfits.set(dateStr, dailyProfits.get(dateStr) + dailyRate);
@@ -102,13 +103,12 @@ const Host = () => {
       setListings(ownedListings);
 
       if (ownedListings.length > 0) {
-        const ownedListingIds = new Set(ownedListings.map(l => String(l.id)));
+        const ownedListingIds = new Set(ownedListings.map((l) => String(l.id)));
         const bookingsResponse = await getBookings();
         calculateProfitData(bookingsResponse.bookings, ownedListingIds);
       } else {
         setProfitData([]);
       }
-
     } catch (error) {
       console.error("Error fetching listings or bookings:", error);
       message.error("Error fetching data for host page");

@@ -129,9 +129,7 @@ const ListingView = () => {
               setRatingModalOpen(true);
             }}
           >
-            <Text className="rating-label">
-              {stars} stars
-            </Text>
+            <Text className="rating-label">{stars} stars</Text>
             <Progress
               percent={percent}
               showInfo={false}
@@ -555,7 +553,8 @@ const ListingView = () => {
                         style={{ color: theme.tiffanyBlue }}
                       />
                       <Text type="secondary">
-                        {typeof listing.address === "object" && listing.address !== null
+                        {typeof listing.address === "object" &&
+                        listing.address !== null
                           ? listing.address.formatted
                           : listing.address || "Address unavailable"}
                       </Text>

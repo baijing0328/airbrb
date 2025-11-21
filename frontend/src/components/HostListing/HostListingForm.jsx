@@ -126,13 +126,19 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
         // Handle images
         if (json.thumbnail) {
           // Check if thumbnail is video or image
-          if (json.thumbnail.includes("youtube.com") || json.thumbnail.includes("youtu.be")) {
-             setThumbnailType("video");
-             form.setFieldsValue({ youtubeUrl: json.thumbnail, thumbnail: null });
+          if (
+            json.thumbnail.includes("youtube.com") ||
+            json.thumbnail.includes("youtu.be")
+          ) {
+            setThumbnailType("video");
+            form.setFieldsValue({
+              youtubeUrl: json.thumbnail,
+              thumbnail: null,
+            });
           } else {
-             setThumbnailType("image");
-             setImagePreview(json.thumbnail);
-             form.setFieldsValue({ thumbnail: json.thumbnail });
+            setThumbnailType("image");
+            setImagePreview(json.thumbnail);
+            form.setFieldsValue({ thumbnail: json.thumbnail });
           }
         }
 
@@ -446,8 +452,8 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
               return false;
             }}
             onRemove={() => {
-               // This onRemove is on the Dragger itself which we aren't using for display list
-               // We handle removal in the custom list below
+              // This onRemove is on the Dragger itself which we aren't using for display list
+              // We handle removal in the custom list below
             }}
           >
             <p className="ant-upload-drag-icon">
@@ -457,14 +463,17 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
               Click or drag file to this area to upload
             </p>
             <p className="ant-upload-hint">
-              Support for image uploads (PNG, JPG, JPEG). First image will be the main thumbnail.
+              Support for image uploads (PNG, JPG, JPEG). First image will be
+              the main thumbnail.
             </p>
           </Upload.Dragger>
 
           {/* Display Main Thumbnail */}
           {imagePreview && (
             <div style={{ marginTop: 16 }}>
-              <p style={{ marginBottom: 8, fontWeight: 'bold' }}>Main Thumbnail:</p>
+              <p style={{ marginBottom: 8, fontWeight: "bold" }}>
+                Main Thumbnail:
+              </p>
               <div style={{ position: "relative", width: 150, height: 150 }}>
                 <img
                   src={imagePreview}
@@ -489,11 +498,11 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
                     setImagePreview(null);
                     // Optionally promote the first property image to thumbnail?
                     if (propertyImages.length > 0) {
-                       const newThumbnail = propertyImages[0];
-                       const newPropertyImages = propertyImages.slice(1);
-                       form.setFieldsValue({ thumbnail: newThumbnail });
-                       setImagePreview(newThumbnail);
-                       setPropertyImages(newPropertyImages);
+                      const newThumbnail = propertyImages[0];
+                      const newPropertyImages = propertyImages.slice(1);
+                      form.setFieldsValue({ thumbnail: newThumbnail });
+                      setImagePreview(newThumbnail);
+                      setPropertyImages(newPropertyImages);
                     }
                   }}
                 />
@@ -504,8 +513,10 @@ const HostListingForm = ({ mode, onSuccess, listingId }) => {
           {/* Display Additional Property Images */}
           {propertyImages.length > 0 && (
             <div style={{ marginTop: 16 }}>
-               <p style={{ marginBottom: 8, fontWeight: 'bold' }}>Additional Images:</p>
-               <div
+              <p style={{ marginBottom: 8, fontWeight: "bold" }}>
+                Additional Images:
+              </p>
+              <div
                 style={{
                   display: "flex",
                   gap: 8,

@@ -44,7 +44,7 @@ const AddressAutocomplete = ({ value, onChange, placeholder }) => {
           country: feature.properties.country,
           lat: feature.properties.lat,
           lon: feature.properties.lon,
-        }
+        },
       }));
 
       setOptions(newOptions);
@@ -59,7 +59,7 @@ const AddressAutocomplete = ({ value, onChange, placeholder }) => {
   const debouncedFetch = useRef(debounce(fetchAddress, 500)).current;
 
   const handleSearch = (newValue) => {
-    // If user types but doesn't select, we might just track the text. 
+    // If user types but doesn't select, we might just track the text.
     // But Select input display is controlled by 'value' prop usually.
     // We update options based on search.
     debouncedFetch(newValue);
@@ -69,25 +69,25 @@ const AddressAutocomplete = ({ value, onChange, placeholder }) => {
     // If option exists, user selected from list -> pass structured data
     // If option is undefined (user cleared input), pass null/string
     if (option && option.addressData) {
-        if (onChange) {
-            onChange(option.addressData);
-        }
+      if (onChange) {
+        onChange(option.addressData);
+      }
     } else {
-        // Fallback for manual input or clear
-        if (onChange) {
-            onChange(newValue);
-        }
+      // Fallback for manual input or clear
+      if (onChange) {
+        onChange(newValue);
+      }
     }
   };
 
   useEffect(() => {
     // Update internal search value when external value changes (e.g. loading initial data)
     if (value !== undefined) {
-        if (typeof value === 'object' && value !== null) {
-            setSearchValue(value.formatted || "");
-        } else {
-            setSearchValue(value);
-        }
+      if (typeof value === "object" && value !== null) {
+        setSearchValue(value.formatted || "");
+      } else {
+        setSearchValue(value);
+      }
     }
   }, [value]);
 
@@ -109,4 +109,3 @@ const AddressAutocomplete = ({ value, onChange, placeholder }) => {
 };
 
 export default AddressAutocomplete;
-

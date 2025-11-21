@@ -64,7 +64,9 @@ const HostItem = ({
 
   // Check if thumbnail is a YouTube embed URL
   const isYouTubeVideo = thumbnail && thumbnail.includes("youtube.com/embed/");
-  const slides = [thumbnail, ...(metadata?.property_images || [])].filter(Boolean);
+  const slides = [thumbnail, ...(metadata?.property_images || [])].filter(
+    Boolean
+  );
   const isYouTubeEmbed = (url) => url && url.includes("youtube.com/embed/");
 
   return (
@@ -93,7 +95,11 @@ const HostItem = ({
           }}
         >
           {slides.length > 1 ? (
-            <Carousel autoplay effect="scrollx" dots={{ className: "custom-dots" }}>
+            <Carousel
+              autoplay
+              effect="scrollx"
+              dots={{ className: "custom-dots" }}
+            >
               {slides.map((slide, index) => (
                 <div key={index}>
                   <div
@@ -168,7 +174,12 @@ const HostItem = ({
             <Typography.Title
               level={5}
               ellipsis={{ tooltip: title }}
-              style={{ margin: 0, fontSize: "16px", color: theme.darkMars, flex: 1 }}
+              style={{
+                margin: 0,
+                fontSize: "16px",
+                color: theme.darkMars,
+                flex: 1,
+              }}
             >
               {title}
             </Typography.Title>

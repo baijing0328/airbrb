@@ -158,20 +158,20 @@ const All = () => {
         const searchText = searchCriteria.searchText.toLowerCase();
         filteredListings = filteredListings.filter((l) => {
           const title = l.details?.title?.toLowerCase() || "";
-          
+
           let addressStr = "";
           const address = l.details?.address;
-          
-          if (typeof address === 'string') {
+
+          if (typeof address === "string") {
             addressStr = address.toLowerCase();
-          } else if (typeof address === 'object' && address !== null) {
+          } else if (typeof address === "object" && address !== null) {
             // Handle case where address might be an object
             const parts = [
-              address.street, 
-              address.city, 
-              address.state, 
-              address.postcode, 
-              address.country
+              address.street,
+              address.city,
+              address.state,
+              address.postcode,
+              address.country,
             ].filter(Boolean);
             addressStr = parts.join(" ").toLowerCase();
           }
