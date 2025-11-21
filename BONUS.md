@@ -28,17 +28,17 @@ As an individual submission, I have successfully implemented **all** features ma
 ## 2. Extra Functional & Technical Enhancements
 Beyond the spec, I implemented three major features that significantly elevate the application's quality.
 
-### 🌍 Address Autocomplete & Geocoding
+### Address Autocomplete & Geocoding
 - **Feature**: Replaced the standard address text input with a smart autocomplete component.
-- **Technical Complexity**: Integrates with the **OpenStreetMap/Nominatim API**. It debounces user input, fetches real-world suggestions asynchronously, and stores structured location data (lat/lon, suburb, state).
+- **Technical Complexity**: Integrates with the **Geoapify API**. It debounces user input, fetches real-world suggestions asynchronously, and stores structured location data (lat/lon, suburb, state).
 - **Justification**: This is a critical usability upgrade. It prevents typos, ensures data consistency, and allows the application to "know" where a property actually is, enabling the map feature below.
 
-### 🗺️ Interactive Map Visualization
+### Interactive Map Visualization
 - **Feature**: Integrated `react-leaflet` to render dynamic maps on listing pages.
 - **Technical Complexity**: Requires managing external CSS/JS libraries within the React ecosystem. It uses the coordinate data captured from the autocomplete system to pin the exact property location.
-- **Justification**: For a travel app, "Location" is the #1 factor. A text address is insufficient; users need spatial context (e.g., "Is this near the beach?"). This feature brings the app to industry parity with real platforms like Airbnb.
+- **Justification**: Simulate a genuine Airbnb user experience by integrating Geoapify API for automatic address completion, retrieving corresponding latitude and longitude coordinates to enable users to view surrounding map details.
 
-### ⚛️ Redux Toolkit State Management
+### Redux Toolkit State Management
 - **Feature**: Architected the entire application using a global Redux store.
 - **Technical Complexity**: Instead of simple `useState` prop-drilling, implemented `authSlice` and `notificationSlice` with persistence logic.
 - **Justification**: Ensures robust session management. Tokens and user state are instantly available to any component (guards, headers, API calls) without complex context passing, resulting in a scalable and maintainable codebase.
