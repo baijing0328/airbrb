@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Card, Tag, Flex, Rate, Typography, Button, Carousel } from "antd";
 import {
   DollarOutlined,
@@ -47,6 +48,13 @@ const HostItem = ({
     metadata,
     availability = [],
   } = listing;
+
+  const averageRating = useMemo(() => {
+    if (!reviews || reviews.length === 0) return 0;
+    const total = reviews.reduce((acc, r) => acc + Number(r.rating || 0), 0);
+    return total / reviews.length;
+  }, [reviews]);
+
   const formattedPublishDate = publishDate
     ? dayjs(publishDate).format("MMM D, YYYY")
     : null;
@@ -258,8 +266,9 @@ const HostItem = ({
 
         <Flex justify="space-between" align="center">
           <Rate
+            allowHalf
             disabled
-            defaultValue={4}
+            value={averageRating}
             style={{ fontSize: "16px", color: theme.sunblownYellow }}
           />
           <Typography.Text

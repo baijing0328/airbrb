@@ -329,8 +329,7 @@ $dark-mars: #1a3635;
 }
 
 .ratingBreakdownContainer {
-  min-width: 280px;
-  max-width: 320px;
+  width: 380px;
 }
 
 .ratingBreakdownRow {
@@ -352,25 +351,28 @@ $dark-mars: #1a3635;
 .ratingProgress {
   margin: 0;
   flex: 1;
-  min-width: 80px;
+  min-width: 100px;
 }
 
 .ratingCount {
-  flex: 0 0 75px;
+  flex: 0 0 100px;
   text-align: right;
   white-space: nowrap;
-  overflow: hidden;
   color: #1a3635;
 }
 
 .listingViewTooltip {
+  max-width: 500px !important;
+
   :global(.ant-tooltip-inner) {
-    background-color: rgba(233, 251, 248, 0.9);
+    width: max-content;
+    min-width: 400px;
+    background-color: rgba(233, 251, 248, 0.95);
     backdrop-filter: blur(10px);
     border: 1px solid #b3e5e0;
     border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    padding: 16px 20px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     color: #1a3635;
   }
 }
